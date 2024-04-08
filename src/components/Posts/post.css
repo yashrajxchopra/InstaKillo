@@ -1,0 +1,29 @@
+.post-container{
+    background-color: rgb(38, 36, 36);
+    width: 500px;
+    height: 450x;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+}
+.img-div{
+    width: 400px;
+    height: 400px;
+    padding-left: 50px;
+    padding-bottom: 20px;
+}
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+img:hover{
+    cursor: pointer;
+}
+
+h3{
+   padding-left: 50px;
+}
+
+
