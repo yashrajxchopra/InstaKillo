@@ -1,32 +1,30 @@
 import React, { useState } from 'react'
 import './index.css'
 import axios from 'axios';
-import useShowToast from '../../hooks/useShowToast';
+
+import { toast } from 'react-toastify';
 
 export default function SignUp() {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const showToast = useShowToast();
-    showToast('YC', 'hello', 'toast');
+    const [fullName, setFullname] = useState('');
+    const history = useHistory();
     const handleSubmit = async () => {
         try {
-          const response = await axios.post('http://localhost:5000/api/register', { email, username, password });
+          const response = await axios.post('http://localhost:5000/api/register', { email, fullName, username, password });
           console.log(response.data);
-          setErrorMessage('');
-          showToast('User registered successfully');
+          toast.success('User registered successfully!',{
+            autoClose: 3000
+            });
+          
         } catch (error) {
           if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            setErrorMessage(error.response.data.error);
+            toast.error('Error Occured!');
           } else if (error.request) {
-            // The request was made but no response was received
-            setErrorMessage('Network error occurred');
+            toast.error("Network error occurred!");
           } else {
-            // Something happened in setting up the request that triggered an Error
-            setErrorMessage('Error occurred while processing request');
+            toast.error("Error occurred while processing request!");
           }
         }
       };
@@ -35,9 +33,9 @@ export default function SignUp() {
     <div className='input-div'>
         <input type="email" value={email} required placeholder='Email'onChange={(event) => setEmail(event.target.value)}/>
         <input type="text" value={username} required placeholder='Username' onChange={(event) => setUsername(event.target.value)}/>
+        <input type="text" value={fullName} required placeholder='Fullname' onChange={(event) => setFullname(event.target.value)}/>
         <input type="password" value={password} required placeholder='Password'onChange={(event) => setPassword(event.target.value)}/>
         <button className='submit-btn'onClick={handleSubmit}>Sign Up</button>
-        {errorMessage?(<h3>{errorMessage}</h3>):('')}
     </div>
     </div>
   )

@@ -1,0 +1,22 @@
+.login-div{
+    background-color: black;
+    color: white;
+    width: 20EM;
+}
+.login-div h3{
+    color: white;
+}
+
+input{
+    margin: 2em;
+}
+button{
+    width: 100px;
+    height: 40px;
+    margin-bottom: 2em;
+    margin-left: 35%;
+}
+button:hover{
+    background-color: rgb(50, 50, 252);
+    
+}

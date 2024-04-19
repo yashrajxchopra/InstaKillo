@@ -95,8 +95,8 @@ const Post = mongoose.model('Posts', PostSchema);
 
 app.post('/api/register', async (req, res) => {
   try {
-    const { username, password, email, fullName, bio } = req.body;
-    
+    const { username, password, email, fullName } = req.body;
+     bio = ''
     const hashedPassword = await bcrypt.hash(password, 10); // Salt rounds = 10
 
     const newUser = new User({
@@ -109,7 +109,8 @@ app.post('/api/register', async (req, res) => {
 
     await newUser.save();
 
-    res.status(201).json({ message: 'User created successfully', user: newUser });
+    res.status(200).json({ message: 'User created successfully', user: newUser });
+    res.redirect('/login');
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -215,7 +216,7 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
 
 app.get('/api/posts', async (req, res) => {
     try {
-      const posts = await Post.find().exec(); /
+      const posts = await Post.find().exec(); 
       res.status(200).json(posts);
     } catch (error) {
       res.status(500).json({ error: error.message });

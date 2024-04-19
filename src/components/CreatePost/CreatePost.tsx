@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import useShowToast from '../../hooks/useShowToast';
 
 export default function CreatePost() {
   const [userId, setUserId] = useState('');
   const [caption, setCaption] = useState('');
   const [image, setImage] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const showToast = useShowToast();
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -29,7 +27,6 @@ export default function CreatePost() {
       });
 
       console.log('Post created successfully:', response.data);
-      showToast('Post created successfully');
       // Reset form fields
       setCaption('');
       setUserId('');
