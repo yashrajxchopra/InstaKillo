@@ -12,7 +12,7 @@ import logoIcon from "./img/icon/logo.png";
 import post1 from "./img/posts/post1.png";
 import userImage from "./img/user.png";
 import Post from './Post';
-const feed = () => {
+const feed = () => { 
     const [likeIcon, setLikeIcon] = useState(heartIcon);
     const [heartIconn, setHeartIcon] = useState(redheartIcon);
     
@@ -50,6 +50,13 @@ const feed = () => {
                 </div>
             </nav>
 
+            <Post/>
+            <Post/>
+            <Post/>
+            <Post/>
+            <Post/>
+            <Post/>
+            <Post/>
             <Post/>
 
             <div className="user-about-section">

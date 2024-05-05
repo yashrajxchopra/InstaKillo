@@ -213,7 +213,7 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
       res.status(500).json({ error: err.message });
     }
   });
-
+//Get All Posts
 app.get('/api/posts', async (req, res) => {
     try {
       const posts = await Post.find().exec(); 
@@ -221,6 +221,15 @@ app.get('/api/posts', async (req, res) => {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
+  });
+//Get Single Post
+app.get('/api/posts/:id' , async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id); 
+    res.status(200).json(post);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
   });
 
   // Start the server
