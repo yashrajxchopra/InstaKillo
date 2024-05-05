@@ -1,0 +1,33 @@
+.post {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 20px;
+  }
+  
+  .post-header {
+    margin-bottom: 10px;
+  }
+  
+  .post-body {
+    margin-bottom: 10px;
+  }
+  
+  .post-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .post-comments,
+  .post-likes {
+    margin-bottom: 10px;
+  }
+  
+  .post-comments h4,
+  .post-likes h4 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+  }
+  
