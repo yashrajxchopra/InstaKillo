@@ -2,19 +2,18 @@ import React, { useEffect, useState } from 'react'
 import './tpost.css'
 import { toast } from 'react-toastify';
 import axios from 'axios';
+
 function getTimeAgoString(timestamp) {
   const now = new Date();
   const createdAt = new Date(timestamp);
   const diff = Math.abs(now - createdAt);
 
-  // Define time intervals in milliseconds
   const minute = 60 * 1000;
   const hour = minute * 60;
   const day = hour * 24;
-  const month = day * 30; // Assuming a month is 30 days
-  const year = day * 365; // Assuming a year is 365 days
+  const month = day * 30; 
+  const year = day * 365; 
 
-  // Calculate the time ago string
   if (diff < minute) {
     return Math.floor(diff / 1000) + ' seconds ago';
   } else if (diff < hour) {
@@ -29,36 +28,33 @@ function getTimeAgoString(timestamp) {
     return Math.floor(diff / year) + ' years ago';
   }
 }
-export default function Post({postId}) {
-  const [post, setPost] = useState(null);
+export default function Post({post}) {
+  //const [post, setPost] = useState(null);
   const [like, setLike] = useState(false);
+  const [comment, setComment] = useState('');
   
-  const userId = '';
+
 
   const handleLike = () => {
     setLike(like?false:true);
   };
-  const handleComment = () => {
-  
+  const handleComment = (e) => {
+    setComment(e.target.value);
   };
-  if(postId == undefined)
-  {
-    postId = '6612e23873da0373eb6b9c13';
-  }
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/posts/${postId}`);
-        setPost(response.data);
-      } catch (error) {
-        toast.error("Error occurred while processing request!");
-      }
-    };
-    fetchPost();
-  }, [postId]); 
-  console.log(post)
+  
+  // useEffect(() => {
+  //   const fetchPost = async () => {
+  //     try {
+  //       const response = await axios.get(`http://localhost:5000/api/posts/${postId}`);
+  //       setPost(response.data);
+  //     } catch (error) {
+  //       toast.error("Error occurred while processing request!");
+  //     }
+  //   };
+  //   fetchPost();
+  // }, [postId]); 
   if (!post) {
-    return <div>Loading...</div>; // Render loading state while waiting for post data
+    return <div>Loading...</div>; 
   }
   return (
   <div>
@@ -73,7 +69,7 @@ export default function Post({postId}) {
           </div>
           <span className="desc title">{getTimeAgoString(post.createdAt)}</span>
         </div>
-        <input type="checkbox" name="" id="like" className="btn" checked={like} onChange={handleLike}/>
+        <input type="checkbox" name="" id='like' className='btn' checked={like} onChange={handleLike}/>
         <input type="checkbox" name="" id="comment" className="btn" />
         <input type="checkbox" name="" id="share" className="btn" />
 
@@ -90,7 +86,7 @@ export default function Post({postId}) {
           <div className="liked">
             <div className="images">
               {post.comments.slice(0, 3).map((element, index) =>(
-                <img src={post.image} key={index} alt="" />
+                <img src={post.image} key={index} alt=""/>
               ))
               }
             </div>
@@ -125,7 +121,7 @@ export default function Post({postId}) {
           </div>
           <div className="new-comment">
             <img src="../images/avatar.png" alt="" />
-            <input type="text" placeholder="Add a comment..." onClick={handleComment}/>
+            <input type="text"  placeholder="Add a comment..." value={comment} onChange={handleComment}/>
           </div>
         </div>
       </div>
@@ -134,3 +130,4 @@ export default function Post({postId}) {
   </div>
   )
 }
+

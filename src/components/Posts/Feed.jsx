@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import "./styles.css";
 import searchIcon from "./img/icon/search.png";
 import homeIcon from "./img/icon/home.png";
@@ -11,12 +11,18 @@ import redheartIcon from "./img/icon/redheart.png";
 import logoIcon from "./img/icon/logo.png";
 import post1 from "./img/posts/post1.png";
 import userImage from "./img/user.png";
-import Post from './Post';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import TestPost from './TestPost';
+
+
 const feed = () => { 
     const [likeIcon, setLikeIcon] = useState(heartIcon);
     const [heartIconn, setHeartIcon] = useState(redheartIcon);
-    
     const [activityVisible, setActivityVisible] = useState(false);
+    const [posts, setPosts] = useState([]);
+
+    const postId = ['6612e23873da0373eb6b9c13', '6612e2704ba8d67cc327495a'];
 
     const toggleActivity = () => {
         setActivityVisible(!activityVisible);
@@ -26,6 +32,22 @@ const feed = () => {
     const toggleLike = () => {
         setLikeIcon(likeIcon === redheartIcon ? heartIconF : redheartIcon);
     };
+    useEffect(() => {
+        const fetchPost = async () => {
+          try {
+            const response = await axios.get(`http://localhost:5000/api/posts`);
+            setPosts(response.data);
+            console.log(response.data)
+          } catch (error) {
+            toast.error("Error occurred while processing request!");
+          }
+        };
+        fetchPost();
+      }, []); 
+    //   if(posts.length === 0)
+    //   {
+    //     return(<div>...Loading</div>)
+    //   }
 
     return (
         <div>
@@ -49,15 +71,16 @@ const feed = () => {
                     <a href="/" className="nav-links"><img src={userImage} className="nav-icon user-profile" alt="" /></a>
                 </div>
             </nav>
-
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
-            <Post/>
+            
+            {/* {posts.map((post, index) =>
+            {
+                return <Post key={post._id + index}post={post}/>;
+            })} */}
+            {postId.map((post, index) =>
+            {
+                return <TestPost key={post}/>;
+            })}
+            
 
             <div className="user-about-section">
                 <div className="user-info">

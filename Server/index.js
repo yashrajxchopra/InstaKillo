@@ -180,7 +180,15 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
         return res.status(404).json({ error: 'Post not found' });
       }
   
-      post.likes.push(req.body.userId); 
+      const userIndex = post.likes.indexOf(req.body.userId);
+      if (userIndex !== -1) {
+        // User has already liked the post, remove the like
+        post.likes.splice(userIndex, 1);
+      } else {
+        // User hasn't liked the post, add the like
+        post.likes.push(req.body.userId);
+      }
+
   
       await post.save();
   
