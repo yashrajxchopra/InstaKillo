@@ -57,7 +57,9 @@ const UserSchema = new mongoose.Schema({
     default: []
   },
   username: {type: String, required: true, unique: true},
-  password: {type: String, required: true}
+  password: {type: String, required: true},
+  pfp: {type: String}
+
   });
 
 const User = mongoose.model('User', UserSchema);
@@ -96,7 +98,9 @@ const Post = mongoose.model('Posts', PostSchema);
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password, email, fullName } = req.body;
-     bio = ''
+    bio = '';
+    const profileImagePath = '../../../Server/uploads\\defaultpfp.png'
+
     const hashedPassword = await bcrypt.hash(password, 10); // Salt rounds = 10
 
     const newUser = new User({
@@ -104,13 +108,13 @@ app.post('/api/register', async (req, res) => {
       password: hashedPassword,
       email,
       fullName,
-      bio
+      bio,
+      pfp: profileImagePath
     });
 
     await newUser.save();
 
     res.status(200).json({ message: 'User created successfully', user: newUser });
-    res.redirect('/login');
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -129,7 +133,7 @@ app.post('/api/login', async (req, res) => {
         return res.status(401).json({ error: 'Invalid password' });
       }
       const token = generateToken(user);
-      res.status(200).json({ message: 'Login successful', token });
+      res.status(200).json({ message: 'Login successful', token});
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
@@ -138,15 +142,25 @@ app.post('/api/login', async (req, res) => {
 // Create post endpoint
 app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res) => {
   try {
+    const allowedExtensions = ['jpg', 'jpeg', 'png'];
+    const fileName = req.file.filename;
+    const fileNameParts = fileName.split('.');
+    const fileExtension = fileNameParts[fileNameParts.length - 1].toLocaleLowerCase();
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-    const { caption, createdBy, image, comments, likes } = req.body;
-    const imagePath = req.file ? path.join('uploads', req.file.filename) : null;
-    
+    if(!allowedExtensions.includes(fileExtension))
+    {
+      return res.status(400).json({error: 'Not a image'});
+    }
+    const { caption, comments, likes} = req.body;
+    const imagePath = req.file ? path.join('../../../Server/uploads', req.file.filename) : null;
+    const token = req.headers.authorization.split(' ')[1];
+    const creator = tokenDecoder(token);
+    console.log(creator);
     const newPost = new Post({
       caption,
-      createdBy,
+      createdBy: creator._id,
       image: imagePath,
       comments,
       likes

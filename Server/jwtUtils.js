@@ -2,7 +2,10 @@ const jwt = require('jsonwebtoken');
 
 // Generate JWT token
 function generateToken(user) {
-    const payload = Object.assign({}, user.toObject());
+    const payload = {
+        userId: user._id,
+        email: user.email,
+    };
     const token=  jwt.sign(payload, '007', { expiresIn: '1h' }); 
     return token;
 }
@@ -22,7 +25,7 @@ function authenticateToken(req, res, next) {
         return res.status(401).json({ error: 'Unauthorized: No token provided' });
     }
 
-    jwt.verify(token, '007', (err, user) => { // Replace 'your_secret_key' with your actual secret key
+    jwt.verify(token, '007', (err, user) => { 
         if (err) {
             return res.status(403).json({ error: 'Forbidden: Invalid token' });
         }
