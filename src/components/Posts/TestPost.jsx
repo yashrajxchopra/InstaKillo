@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import heartIcon from "./img/icon/heart-nofill.png";
 import commentIcon from "./img/icon/comment.png";
@@ -9,51 +9,88 @@ import post1 from "./img/posts/post1.png";
 import close from "./img/icon/close.png";
 import userImage from "./img/user.png";
 import getTimeAgoString from '../../hooks/getTimeAgoString';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const style = {
-    height: '700px',
+    height: 'auto',
   };
 
-export default function TestPost() {
+export default function TestPost({post, updatePostData}) {
+    const userId = '663f56124af70d8faa6f85ac';
     const [likeIcon, setLikeIcon] = useState(heartIcon);
     const [isOpen, SetIsOpen] = useState(false);
+    const [userData, setUserData] = useState(null);
 
-    const comments = ['Hello from one.Hello from one.Hello from one.Hello from one.Hello from one.Hello from one.Hello from one.Hello from one.Hello from one.Hello from one.Hello from one.', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two', 'Hello from two'];
     const toggleComment = ()=>{
         SetIsOpen(prevState => !prevState);
     }
 
     
 
-    const toggleLike = () => {
-        setLikeIcon(likeIcon === redheartIcon ? heartIcon : redheartIcon);
+    const toggleLike = async () => {
+        //setLikeIcon(likeIcon === redheartIcon ? heartIcon : redheartIcon);
+        try {
+            const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/like`, { userId });
+            updatePostData(post._id, response.data.post);
+            setLikeIcon(likeIcon === redheartIcon ? heartIcon : redheartIcon);
+          } catch (error) {
+            if (error.response) {
+                toast.error('Error adding like:', error.response.data.error); 
+              } else {
+                toast.error('Cannot get to server', error.message); 
+                console.log(error)
+              }
+          }
     };
-    console.log(isOpen)
+    
+    useEffect(() => {
+        async function fetchUserData() {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/user/${post.createdBy}`); 
+                setUserData(response.data);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        }
+
+        fetchUserData();
+        if(post.likes.includes(userId))
+        {
+            setLikeIcon(redheartIcon);
+        }
+    }, [post]);
+    
   return (
         <div className="post-container">
             
                     <div className="post" style={style}>
                     {!isOpen ? (
-                    /* Content to render when isOpen is true */
                     <div className="post-header" >
-                        <img src={userImage} className="user-icon" alt="" />
-                        <p className="username">@yashraj</p>
+                        {userData ? ( // Conditionally render user data if available
+                            <>
+                                <img src={userData.pfp} className="user-icon" alt="" />
+                                <p className="username">{userData.username}</p>
+                            </>
+                        ) : (
+                            <p>Loading...</p>
+                        )}
                     </div>
                 ) : (
-                    /* Content to render when isOpen is false */
 
                     <div className="comment-section">
                     <div className="comment-header">
-                    <h2 onClick={toggleComment}>Comments</h2>
-                    <img src={close} alt='close'/>
+                    <h2>Comments</h2>
+                    <img src={close} onClick={toggleComment} alt='close'/>
                     </div>
                     <div className="comment-list">
-                    {comments.map((com, index) => (
+                    {(post.comments.length == 0) && <span className='no-comments'>No Comments</span>}
+                    {post.comments.map((com, index) => (
                         <div className="comment" key={index}>
-                        <img src={userImage} alt="" />
+                        <img src={post.image} alt="" />
                         <span>
-                        {com}
-                        <div className="desc">{getTimeAgoString('2024-04-07T18:13:12.402Z')}</div>
+                        {com.comment}
+                        <div className="desc">{getTimeAgoString(post.createdAt)}</div>
                         </span>
                         </div>
                         ))}
@@ -72,7 +109,7 @@ export default function TestPost() {
                                 <img src={likeIcon} className="like-icon" alt="" onClick={toggleLike} />
                             </div>
                             <div className="post-img-container">
-                                <img src={post1} alt="" />
+                                <img src={post.image} alt="" />
                                 <img src={post1} alt="" />
                             </div>
                         </div>
@@ -82,9 +119,9 @@ export default function TestPost() {
                                 <img src={commentIcon} className="comment-btn" alt="" onClick={toggleComment} />
                                 <img src={sendIcon} className="send-btn" alt="" />
                             </div>
-                            <span className="likes">1k likes</span>
-                            <p className="post-des">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores ipsa incidunt obcaecati esse illo voluptates libero debitis nisi. Id tempora vel illum vitae temporibus commodi non cupiditate atque voluptas. Ipsam.Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolores ipsa incidunt obcaecati esse illo voluptates libero debitis nisi. Id tempora vel illum vitae temporibus commodi non cupiditate atque volup</p>
-                            <span className="comment-count">100 comments</span>
+                            <span className="likes">{post.likes.length} likes</span>
+                            <p className="post-des">{post.caption}</p>
+                            <span className="comment-count">{post.comments.length} comments</span>
                         </div>
                     </>
                 )}

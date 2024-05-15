@@ -94,7 +94,7 @@ const PostSchema = new mongoose.Schema({
   });
   
 const Post = mongoose.model('Posts', PostSchema);
-
+//register user
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password, email, fullName } = req.body;
@@ -160,7 +160,7 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
     console.log(creator);
     const newPost = new Post({
       caption,
-      createdBy: creator._id,
+      createdBy: creator.userId,
       image: imagePath,
       comments,
       likes
@@ -169,7 +169,7 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
     
     await newPost.save();
     console.log(req.user._id+"  " +newPost._id )
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(creator.userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -177,8 +177,6 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
     await user.save();
 
     res.status(200).json({ message: 'Post added successfully', post: newPost });
-    
-    res.status(201).json({ message: 'Post created successfully', post: newPost });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -206,7 +204,7 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
   
       await post.save();
   
-      res.status(200).json({ message: 'Like added successfully', post });
+      res.status(200).json({ message: 'Like added successfully', post: post});
     } catch (err) {
       console.error('Error adding like:', err);
       res.status(500).json({ error: err.message });
@@ -253,6 +251,24 @@ app.get('/api/posts/:id' , async (req, res) => {
     res.status(500).json({ error: error.message });
   }
   });
+
+// Endpoint to retrieve username and pfp from _id
+app.get('/api/user/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const user = await User.findById(userId);
+
+    if (user) {
+      const { username, pfp } = user;
+      res.json({ username, pfp });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
   // Start the server
 const PORT = 5000;

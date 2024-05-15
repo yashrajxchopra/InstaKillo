@@ -22,7 +22,7 @@ const feed = () => {
     const [activityVisible, setActivityVisible] = useState(false);
     const [posts, setPosts] = useState([]);
 
-    const postId = ['6612e23873da0373eb6b9c13', '6612e2704ba8d67cc327495a'];
+    //const postId = ['6612e23873da0373eb6b9c13', '6612e2704ba8d67cc327495a'];
 
     const toggleActivity = () => {
         setActivityVisible(!activityVisible);
@@ -32,6 +32,13 @@ const feed = () => {
     const toggleLike = () => {
         setLikeIcon(likeIcon === redheartIcon ? heartIconF : redheartIcon);
     };
+
+    const updatePostData = (postId, updatedPost) => {
+        setPosts((prevPosts) =>
+            prevPosts.map((post) => (post._id === postId ? { ...post, ...updatedPost } : post))
+        );
+    };
+    
     useEffect(() => {
         const fetchPost = async () => {
           try {
@@ -76,9 +83,9 @@ const feed = () => {
             {
                 return <Post key={post._id + index}post={post}/>;
             })} */}
-            {postId.map((post, index) =>
+            {posts.map((post, index) =>
             {
-                return <TestPost key={post}/>;
+                return <TestPost post={post} key={index} updatePostData={updatePostData}/>;
             })}
             
 
