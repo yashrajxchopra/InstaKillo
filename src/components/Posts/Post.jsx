@@ -42,17 +42,7 @@ export default function Post({post}) {
     setComment(e.target.value);
   };
   
-  // useEffect(() => {
-  //   const fetchPost = async () => {
-  //     try {
-  //       const response = await axios.get(`http://localhost:5000/api/posts/${postId}`);
-  //       setPost(response.data);
-  //     } catch (error) {
-  //       toast.error("Error occurred while processing request!");
-  //     }
-  //   };
-  //   fetchPost();
-  // }, [postId]); 
+  
   if (!post) {
     return <div>Loading...</div>; 
   }

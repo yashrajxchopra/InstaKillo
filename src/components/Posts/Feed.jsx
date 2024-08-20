@@ -14,6 +14,17 @@ import userImage from "./img/user.png";
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import TestPost from './TestPost';
+import TestCreate from '../CreatePost/TestCreate';
+import { Button, useDisclosure } from '@chakra-ui/react';
+import {
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+  } from '@chakra-ui/react'
 
 
 const feed = () => { 
@@ -21,7 +32,7 @@ const feed = () => {
     const [heartIconn, setHeartIcon] = useState(redheartIcon);
     const [activityVisible, setActivityVisible] = useState(false);
     const [posts, setPosts] = useState([]);
-
+    const { isOpen, onOpen, onClose } = useDisclosure()
     //const postId = ['6612e23873da0373eb6b9c13', '6612e2704ba8d67cc327495a'];
 
     const toggleActivity = () => {
@@ -57,7 +68,7 @@ const feed = () => {
     //   }
 
     return (
-        <div>
+        <div className='feed'>
             <nav className="navbar">
                 <img src={logoIcon} className="logo" alt="" />
                 <form className="search-box">
@@ -74,7 +85,20 @@ const feed = () => {
                             ....
                         </div>
                     </div>
-                    <a href="/" className="nav-links"><img src={addIcon} className="nav-icon" alt="" /></a>
+                    <img src={addIcon} onClick={onOpen} className="nav-icon" alt=""/>
+                    <Modal className="custom-modal" onClose={onClose} isOpen={isOpen} isCentered>
+                        <ModalOverlay />
+                        <ModalContent>
+                        <ModalHeader>Modal Title</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                            <p>Hello from yc</p>
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button onClick={onClose}>Close</Button>
+                        </ModalFooter>
+                        </ModalContent>
+                    </Modal>
                     <a href="/" className="nav-links"><img src={userImage} className="nav-icon user-profile" alt="" /></a>
                 </div>
             </nav>
@@ -83,10 +107,12 @@ const feed = () => {
             {
                 return <Post key={post._id + index}post={post}/>;
             })} */}
+            <div className='posts'>
             {posts.map((post, index) =>
             {
                 return <TestPost post={post} key={index} updatePostData={updatePostData}/>;
             })}
+            </div>
             
 
             <div className="user-about-section">
@@ -113,6 +139,7 @@ const feed = () => {
                 </div>
             </div>
         </div>
+        
     );
 };
 

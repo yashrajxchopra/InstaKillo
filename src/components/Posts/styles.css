@@ -11,6 +11,10 @@ body{
     background: #fafafa;
 }
 
+.feed{
+    display: flex;
+    justify-content: baseline;
+}
 .navbar{
     width: 100%;
     height: 60px;
@@ -148,6 +152,8 @@ body{
 
 .post-container{
     width: 60%;
+    display: flex;
+    justify-content: center;
 }
 
 .post{
@@ -541,8 +547,14 @@ body{
   .no-comments{
     margin-left: 130px;
   }
+  .posts{
+    display: flex;
+    flex-direction: column;
+  }
   
-
-
-
+  @media screen and (max-width: 1191px) {
+    .user-about-section {
+        display: none;
+    }
+}
 

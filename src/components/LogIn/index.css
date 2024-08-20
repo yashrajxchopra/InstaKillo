@@ -1,14 +1,30 @@
+.container{
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .login-div{
-    background-color: black;
+    background-color: rgb(240, 240, 240);
     color: white;
     width: 20EM;
+    border-radius: 6px;
 }
 .login-div h3{
-    color: white;
+    color: black;
+    margin-left: 6em;
 }
 
-input{
+.inputText{
     margin: 2em;
+    height: 3em;
+    width: 80%;
+}
+input{
+    width: 20em;
+    height: 2em;
+    margin-left: 2.2em;
 }
 button{
     width: 100px;
@@ -19,4 +35,9 @@ button{
 button:hover{
     background-color: rgb(50, 50, 252);
     
+}
+
+span{
+    color: rgb(80, 78, 74);
+    margin-left: 3.5em;
 }

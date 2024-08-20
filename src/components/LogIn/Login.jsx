@@ -8,6 +8,14 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const handleSubmit = async () => {
         try {
+          if(email == ''){
+            toast.error("Enter Email");
+            return;
+          }
+          if(password == ''){
+            toast.error("Enter Password");
+            return;
+          }
           const response = await axios.post('http://localhost:5000/api/login', { email, password });
           toast.success("Login Successful!");
           const { token } = response.json();
@@ -31,17 +39,20 @@ export default function Login() {
       setShowPassword(!showPassword);
     };
   return (
-    <div className='login-div'>
+    <div className="container">
+      <div className='login-div'>
     <h3>InstaKillo</h3>
     <form >
         <label htmlFor="username"></label>
-        <input type="text" value={email} required placeholder='Email'onChange={(event) => setEmail(event.target.value)}/><br/>
+        <input type="text" className='inputText' value={email} required placeholder='Email'onChange={(event) => setEmail(event.target.value)}/><br/>
         <div className="password-input-container">
-          <input type={showPassword ? "text" : "password"} value={password} required placeholder="Password" onChange={(event) => setPassword(event.target.value)} />
-          <input type="checkbox" onClick={togglePasswordVisibility} />
+          <input type={showPassword ? "text" : "password"}  className='inputText' value={password} required placeholder="Password" onChange={(event) => setPassword(event.target.value)} />
+          <input type="checkbox"  onClick={togglePasswordVisibility} />
         </div>
+        <span>Don't have an account?<a href="/signup"> Signup</a></span>
         <button type="button" onClick={handleSubmit}>Log In</button>
     </form>
+    </div>
     </div>
   )
 }
