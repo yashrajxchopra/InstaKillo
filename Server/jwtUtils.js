@@ -6,7 +6,7 @@ function generateToken(user) {
         userId: user._id,
         email: user.email,
     };
-    const token=  jwt.sign(payload, '007', { expiresIn: '1h' }); 
+    const token=  jwt.sign(payload, '007', { expiresIn: '6d' }); 
     return token;
 }
 
@@ -29,7 +29,7 @@ function authenticateToken(req, res, next) {
         if (err) {
             return res.status(403).json({ error: 'Forbidden: Invalid token' });
         }
-        req.user = user;
+        req.user = user; // Attach the decoded user data to the request object
         next();
     });
 }

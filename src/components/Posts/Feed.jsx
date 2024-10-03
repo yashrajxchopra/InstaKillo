@@ -25,6 +25,7 @@ import {
     ModalBody,
     ModalCloseButton,
   } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom';
 
 
 const feed = () => { 
@@ -33,6 +34,7 @@ const feed = () => {
     const [activityVisible, setActivityVisible] = useState(false);
     const [posts, setPosts] = useState([]);
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const navigate = useNavigate();
     //const postId = ['6612e23873da0373eb6b9c13', '6612e2704ba8d67cc327495a'];
 
     const toggleActivity = () => {
@@ -53,12 +55,26 @@ const feed = () => {
     useEffect(() => {
         const fetchPost = async () => {
           try {
-            const response = await axios.get(`http://localhost:5000/api/posts`);
+            const token  = localStorage.getItem('token');
+            const response = await axios.get('http://localhost:5000/api/posts', {
+                headers: {
+                    'Authorization': `Bearer ${token}` // Attach the token as a Bearer token in the Authorization header
+                }
+            });
             setPosts(response.data);
             console.log(response.data)
           } catch (error) {
-            toast.error("Error occurred while processing request!");
-          }
+            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                toast.error("Session expired or invalid token, please login again!");
+                localStorage.removeItem('token');
+                navigate('/login'); // Redirect to login page
+            } else {
+                // Other errors, e.g., server issues, network errors, etc.
+                toast.error("Error occurred while processing request!");
+                console.error("Error details:", error);
+            }
+        }
+
         };
         fetchPost();
       }, []); 

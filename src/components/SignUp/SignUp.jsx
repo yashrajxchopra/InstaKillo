@@ -3,6 +3,7 @@ import './index.css'
 import axios from 'axios';
 
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 export default function SignUp() {
     const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ export default function SignUp() {
     const [password, setPassword] = useState('');
     const [fullName, setFullname] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const navigate  = useNavigate();
     //const history = useHistory();
     const handleSubmit = async () => {
         try {
@@ -33,6 +35,7 @@ export default function SignUp() {
           toast.success('User registered successfully!',{
             autoClose: 3000
             });
+          navigate('/login');
           
         } catch (error) {
           if (error.response.data.error) {

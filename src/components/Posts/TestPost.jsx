@@ -11,11 +11,20 @@ import userImage from "./img/user.png";
 import getTimeAgoString from '../../hooks/getTimeAgoString';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const style = {
     height: 'auto',
-    width: '500'
+    width: '500px'
   };
+  const userStyle = {
+    fontFamily: "'Arial'", 
+    fontSize: '13px',                
+    fontWeight: '500',             
+    color: 'black',        
+    cursor: 'pointer',             
+};
+
 
 export default function TestPost({post, updatePostData}) {
     const userId = '663f56124af70d8faa6f85ac';
@@ -23,9 +32,29 @@ export default function TestPost({post, updatePostData}) {
     const [isOpen, SetIsOpen] = useState(false);
     const [userData, setUserData] = useState(null);
     const [comment, setComment] = useState('');
+    const [profilePictures, setProfilePictures] = useState([]);
+    const navigate = useNavigate();
 
+    const handleClick = ()=>{
+        navigate(`/p/`)
+    }
+    
+    const getUserPfp = async(userId) => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/user/${userId}`);
+            setProfilePictures(prev => [...prev, response.data.pfp]);
+        } catch (error) {
+            console.error("Error fetching profile picture:", error);
+        }
+    };
+    
     const toggleComment = ()=>{
         SetIsOpen(prevState => !prevState);
+        if(profilePictures.length === 0){
+            for(const comment of post.comments){
+                getUserPfp(comment.createdBy)
+            }
+     }
     }
 
     const handleKeyDown = (event) => {
@@ -41,7 +70,14 @@ export default function TestPost({post, updatePostData}) {
     const toggleLike = async () => {
         //setLikeIcon(likeIcon === redheartIcon ? heartIcon : redheartIcon);
         try {
-            const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/like`, { userId });
+            const token  = localStorage.getItem('token');
+            const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/like`, {},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`  
+                    }
+                }
+            );
             updatePostData(post._id, response.data.post);
             setLikeIcon(likeIcon === redheartIcon ? heartIcon : redheartIcon);
           } catch (error) {
@@ -56,7 +92,10 @@ export default function TestPost({post, updatePostData}) {
 
     const  postComment = async () =>{
        try{
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmZlM2IwOWFkN2M1NDYwZmEzNzk0YTciLCJlbWFpbCI6Inlhc2hAZ21haWwuY29tIiwiaWF0IjoxNzI3OTM3MzcyLCJleHAiOjE3Mjc5NDA5NzJ9.TpqK77cmqvcg5eWyOHuiN-cs4vpuiHz5Z68lBAlNS-8';
+        const token = localStorage.getItem('token');
+        if(!token){
+            throw new Error("No credentials found");
+        }
         const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/comment`,
             { comment: comment }, 
             {
@@ -75,7 +114,6 @@ export default function TestPost({post, updatePostData}) {
         
 
     };
-    
     useEffect(() => {
         async function fetchUserData() {
             try {
@@ -116,13 +154,14 @@ export default function TestPost({post, updatePostData}) {
                     <img src={close} onClick={toggleComment} alt='close'/>
                     </div>
                     <div className="comment-list">
-                    {(post.comments.length == 0) && <span className='no-comments'>No Comments</span>}
+                    {(post.comments.length === 0) && <span className='no-comments'>No Comments</span>}
                     {post.comments.map((com, index) => (
                         <div className="comment" key={index}>
-                        <img src={post.image} alt="" />
-                        <span>
+                        <img src={profilePictures[0]} onClick={handleClick} alt="" style={{cursor: 'pointer'}}/>
+                        <span style={{ marginLeft: '1.5em' }}>
+                        <p style={userStyle} onClick={handleClick}>TestUser</p>
                         <p>{com.comment}</p>
-                        <div className="desc">{getTimeAgoString(post.createdAt)}</div>
+                        <div className="desc">{getTimeAgoString(com.createdAt)}</div>
                         </span>
                         </div>
                         ))}
@@ -154,6 +193,7 @@ export default function TestPost({post, updatePostData}) {
                             <span className="likes">{post.likes.length} likes</span>
                             <p className="post-des">{post.caption}</p>
                             <span className="comment-count">{post.comments.length} comments</span>
+                            <span  className="comment-count">Uploded {getTimeAgoString(post.createdAt)}</span>
                         </div>
                     </>
                 )}

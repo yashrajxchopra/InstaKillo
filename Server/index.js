@@ -186,7 +186,8 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
   }
   });
   //like the post
-  app.post('/api/posts/:postId/like', async (req, res) => {
+  app.post('/api/posts/:postId/like', authenticateToken, async (req, res) => {
+    const userId = req.user.userId;
     try {
       const postId = req.params.postId;
   
@@ -196,13 +197,13 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
         return res.status(404).json({ error: 'Post not found' });
       }
   
-      const userIndex = post.likes.indexOf(req.body.userId);
+      const userIndex = post.likes.indexOf(userId);
       if (userIndex !== -1) {
         // User has already liked the post, remove the like
         post.likes.splice(userIndex, 1);
       } else {
         // User hasn't liked the post, add the like
-        post.likes.push(req.body.userId);
+        post.likes.push(userId);
       }
 
   
@@ -245,7 +246,8 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
     }
   });
 //Get All Posts
-app.get('/api/posts', async (req, res) => {
+app.get('/api/posts', authenticateToken, async (req, res) => {
+    //console.log(req.user)
     try {
       const posts = await Post.find().exec(); 
       res.status(200).json(posts);
@@ -254,7 +256,7 @@ app.get('/api/posts', async (req, res) => {
     }
   });
 //Get Single Post
-app.get('/api/posts/:id' , async (req, res) => {
+app.get('/api/posts/:id', async (req, res) => {
   try {
     const post = await Post.findById(req.params.id); 
     res.status(200).json(post);
@@ -280,7 +282,21 @@ app.get('/api/user/:id', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-app.get('/test', (req, res) => {
+app.post('/api/NoInputLogin',authenticateToken, async (req, res) =>{
+   try{
+    const email = req.user.email;
+    const user = await User.findOne({ email });
+   if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  res.status(200).json({ message: 'Login successful'});
+  console.log("success")
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+    console.log("error")
+  }
+  });
+app.get('/api/test', (req, res) => {
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
