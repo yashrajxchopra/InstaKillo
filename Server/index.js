@@ -5,7 +5,8 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
-const { generateToken, authenticateToken, tokenDecoder } = require('./jwtUtils');
+const { generateToken, authenticateToken, tokenDecoder, verifyToken } = require('./jwtUtils');
+const { error } = require('console');
 
 
 const generateRandomString = () => {
@@ -124,6 +125,9 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
     try {
       const { email, password } = req.body;
+      if(!(email && password)){
+          return res.status(402).json({error: 'No Input'});
+      }
       const user = await User.findOne({ email });
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
@@ -215,10 +219,17 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
   app.post('/api/posts/:postId/comment', async (req, res) => {
     try {
       const postId = req.params.postId;
-      const { comment, createdBy } = req.body;
-  
+      const { comment } = req.body;
+      const authHeader = req.headers['authorization'];
+      const token = authHeader && authHeader.split(' ')[1];
+      if (!token || !comment) return res.status(401).json({ message: 'No token provided' });
+      if(!verifyToken(token)){
+          return res.status(401).json({error: 'Invalid Token'});
+      }
       const post = await Post.findById(postId);
-  
+      const userInfo = tokenDecoder(token);
+      const createdBy = userInfo.userId;
+     
       if (!post) {
         return res.status(404).json({ error: 'Post not found' });
       }
@@ -268,6 +279,22 @@ app.get('/api/user/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
+});
+app.get('/test', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Test Page</title>
+    </head>
+    <body>
+        <h1>Hello, World!</h1>
+        <p>This is a test page served by Express.js.</p>
+    </body>
+    </html>
+  `);
 });
 
   // Start the server

@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 
 const style = {
     height: 'auto',
+    width: '500'
   };
 
 export default function TestPost({post, updatePostData}) {
@@ -21,12 +22,21 @@ export default function TestPost({post, updatePostData}) {
     const [likeIcon, setLikeIcon] = useState(heartIcon);
     const [isOpen, SetIsOpen] = useState(false);
     const [userData, setUserData] = useState(null);
+    const [comment, setComment] = useState('');
 
     const toggleComment = ()=>{
         SetIsOpen(prevState => !prevState);
     }
 
-    
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            if (comment.trim()) {
+                postComment();
+            }
+        }
+
+    }
 
     const toggleLike = async () => {
         //setLikeIcon(likeIcon === redheartIcon ? heartIcon : redheartIcon);
@@ -42,6 +52,28 @@ export default function TestPost({post, updatePostData}) {
                 console.log(error)
               }
           }
+    };
+
+    const  postComment = async () =>{
+       try{
+        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmZlM2IwOWFkN2M1NDYwZmEzNzk0YTciLCJlbWFpbCI6Inlhc2hAZ21haWwuY29tIiwiaWF0IjoxNzI3OTM3MzcyLCJleHAiOjE3Mjc5NDA5NzJ9.TpqK77cmqvcg5eWyOHuiN-cs4vpuiHz5Z68lBAlNS-8';
+        const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/comment`,
+            { comment: comment }, 
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`  
+                }
+            }
+        );
+        updatePostData(post._id, response.data.post);
+        setComment('');
+        toast.success('Comment Added')
+       }
+       catch(error){
+            console.log(error.response.data.error)
+       }
+        
+
     };
     
     useEffect(() => {
@@ -89,7 +121,7 @@ export default function TestPost({post, updatePostData}) {
                         <div className="comment" key={index}>
                         <img src={post.image} alt="" />
                         <span>
-                        {com.comment}
+                        <p>{com.comment}</p>
                         <div className="desc">{getTimeAgoString(post.createdAt)}</div>
                         </span>
                         </div>
@@ -97,7 +129,7 @@ export default function TestPost({post, updatePostData}) {
                     </div>
                     <div className="new-comment">
                         <img src={userImage} alt="" />
-                        <input type="text"  placeholder="Add a comment..." />
+                        <input type="text"  placeholder="Add a comment..." value={comment} onChange={(e) => setComment(e.target.value)} onKeyDown={handleKeyDown}/>
                     </div>
                   </div>
 

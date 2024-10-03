@@ -24,7 +24,7 @@ export default function SignUp() {
             toast.error("Enter Name");
             return;
           }
-          if(password.length < 7){
+          if(password.length < 6){
             toast.error("Password lenght should greater than 6");
             return;
           }
@@ -35,8 +35,8 @@ export default function SignUp() {
             });
           
         } catch (error) {
-          if (error.response) {
-            toast.error('Error Occured!');
+          if (error.response.data.error) {
+            toast.error(error.response.data.error);
           } else if (error.request) {
             toast.error("Network error occurred!");
           } else {

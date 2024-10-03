@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import "./index.css"
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -25,13 +26,14 @@ export default function Login() {
         } catch (error) {
           if (error.response) {
             console.log(error.response.data.error);
-            toast.error("Error Occured!");
+            toast.error(error.response.data.error);
           } else if (error.request) {
             console.log('Network error occurred');
             toast.error("Network error occurred!");
-          } else {
-            console.log('Error occurred while processing request');
-            toast.error("Error occurred while processing request!");
+          } 
+          else {
+            console.log(error);
+            toast.error(error.response.data.error);
           }
         }
     }

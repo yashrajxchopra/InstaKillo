@@ -16,7 +16,7 @@ function verifyToken(token) {
 }
 
 function tokenDecoder(token){
-    return jwt.verify(token, '007'); 
+    return jwt.decode(token, '007'); 
 }
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
