@@ -1,0 +1,23 @@
+version: '3'
+services:
+  frontend:
+    build: ./  # Path to your frontend folder
+    ports:
+      - "5173:5173"  # Map port 5173 of the host to the frontend
+    volumes:
+      - ./Frontend:/app  # Mount the frontend directory
+    networks:
+      - app-network
+
+  backend:
+    build: ./Server  # Path to your backend folder
+    ports:
+      - "5000:5000"  # Map port 5000 of the host to the backend
+    volumes:
+      - ./Server:/app  # Mount the backend directory
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
