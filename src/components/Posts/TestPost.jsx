@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useInsertionEffect } from 'react'
 import { useState } from 'react';
 import heartIcon from "./img/icon/heart-nofill.png";
 import commentIcon from "./img/icon/comment.png";
@@ -12,10 +12,12 @@ import getTimeAgoString from '../../hooks/getTimeAgoString';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { TbArrowAutofitRight } from 'react-icons/tb';
 
 const style = {
     height: 'auto',
-    width: '500px'
+    width: '500px',
+    marginTop: '70px'
   };
   const userStyle = {
     fontFamily: "'Arial'", 
@@ -29,14 +31,24 @@ const style = {
 export default function TestPost({post, updatePostData}) {
     //const userId = '663f56124af70d8faa6f85ac';
     const [likeIcon, setLikeIcon] = useState(heartIcon);
-    const [isOpen, SetIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const [userData, setUserData] = useState(null);
     const [comment, setComment] = useState('');
-    const [profilePictures, setProfilePictures] = useState([]);
+    const [commentData, setCommentData] = useState([]);
     const navigate = useNavigate();
 
     const handleClick = ()=>{
         navigate(`/p/`)
+    }
+
+    const fetchUserData = async (createdBy)=>{
+            try {
+                const response = await axios.get(`http://localhost:5000/api/user/${createdBy}`); 
+                console.log(response.data)
+                return response.data;
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
     }
 
     const checkLike = async (likeArray) =>{
@@ -77,14 +89,36 @@ export default function TestPost({post, updatePostData}) {
         }
     };
     
-    const toggleComment = ()=>{
-        SetIsOpen(prevState => !prevState);
-        if(profilePictures.length === 0){
-            for(const comment of post.comments){
-                getUserPfp(comment.createdBy)
+    const toggleComment = async () => {
+        setIsOpen(prevState => !prevState);
+        
+        if (commentData.length === 0 || commentData.every(item => Object.keys(item).length === 0)) {
+            const newCommentData = [];
+            
+            for (const comment of post.comments) {
+                try {
+                    const commentUser = await fetchUserData(comment.createdBy); // Fetch user data for each comment
+                    console.log(commentUser, 'Fetched comment user data', comment.createdBy);
+    
+                    // Push the fetched data into the new array
+                    newCommentData.push({
+                        user: commentUser.username,
+                        pfp: commentUser.pfp
+                    });
+                } catch (error) {
+                    console.log('Error fetching comment user data');
+                    newCommentData.push({
+                        user: 'Unknown', 
+                        pfp: '../../../Server/uploads\\defaultpfp.png'
+                    });
+                }
             }
-     }
-    }
+    
+            console.log(newCommentData)
+            setCommentData(newCommentData);
+        }
+    };
+    
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {
@@ -151,6 +185,27 @@ export default function TestPost({post, updatePostData}) {
         updatePostData(post._id, response.data.post);
         setComment('');
         toast.success('Comment Added')
+        try{
+            const user_Id = await axios.post('http://localhost:5000/api/getUserId',{},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`  
+                    }
+                }
+            );
+        const userData = await fetchUserData(user_Id.data._id);
+        const newComment = {
+                user: userData.username, // Assuming userData contains username
+                pfp: userData.pfp // Assuming userData contains pfp
+        }
+
+        // Update the commentData state to include the new comment
+        setCommentData(prevCommentData => [...prevCommentData, newComment]);
+        }
+        catch(error){
+            console.log(error)
+            toast.error(error.response.data.error)
+        }
        }
        catch(error){
             console.log(error.response.data.error)
@@ -159,21 +214,19 @@ export default function TestPost({post, updatePostData}) {
 
     };
     useEffect(() => {
-        // async function fetchUserData() {
-        //     try {
-        //         const response = await axios.get(`http://localhost:5000/api/user/${post.createdBy}`); 
-        //         setUserData(response.data);
-        //     } catch (error) {
-        //         console.error('Error fetching user data:', error);
-        //     }
-        // }
 
-        // fetchUserData();
-        // if(post.likes.includes(userId))
-        // {
-        //     setLikeIcon(redheartIcon);
-        // }
+        const loadUserData = async () => {
+            try {
+                const userData = await fetchUserData(post.createdBy);
+                setUserData(userData);
+                checkLike(post.likes);
+            } catch (error) {
+                console.error('Error fetching user data or checking likes:', error);
+            }
+        };
+        loadUserData();
         checkLike(post.likes);
+
     }, [post])
     
   return (
@@ -202,9 +255,30 @@ export default function TestPost({post, updatePostData}) {
                     {(post.comments.length === 0) && <span className='no-comments'>No Comments</span>}
                     {post.comments.map((com, index) => (
                         <div className="comment" key={index}>
-                        <img src={profilePictures[0]} onClick={handleClick} alt="" style={{cursor: 'pointer'}}/>
-                        <span style={{ marginLeft: '1.5em' }}>
-                        <p style={userStyle} onClick={handleClick}>TestUser</p>
+                         {commentData[index] ? (
+                                    <img
+                                        src={commentData[index].pfp}
+                                        onClick={handleClick}
+                                        alt=""
+                                        style={{ cursor: 'pointer' }}
+                                    />
+                                ) : (
+                                    <img
+                                        src="../../../Server/uploads\\defaultpfp.png" 
+                                        onClick={handleClick}
+                                        alt=""
+                                        style={{ cursor: 'pointer' }}
+                                    />
+                                )}
+
+                                <span style={{ marginLeft: '1.5em' }}>
+                                    {commentData[index] ? (
+                                        <p style={userStyle} onClick={handleClick}>
+                                            {commentData[index].user}
+                                        </p>
+                                    ) : (
+                                        <p style={userStyle} onClick={handleClick}>Loading</p>
+                                    )}
                         <p>{com.comment}</p>
                         <div className="desc">{getTimeAgoString(com.createdAt)}</div>
                         </span>

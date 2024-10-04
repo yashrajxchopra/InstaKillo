@@ -46,18 +46,21 @@ To get a local copy of this project up and running, follow these steps:
    ```bash
    cd InstaKillo
    ```
+3. **Set up MongoDB:**
 
-3. **Set up environment variables:**
+   Create MongoDB database with the name 'mongoDb' and make sure connection is on port 27017
+
+4. **Set up environment variables:**
 
    Replace "mongodb://localhost:27017/mongoDb" with process.env.MONGODB_URL in Server/index.js
 
-4. **Run the application using Docker Compose:**
+5. **Run the application using Docker Compose:**
 
    ```bash
    docker-compose up --build
    ```
 
-5. **Access the application:**
+6. **Access the application:**
 
    Open your web browser and go to `http://localhost:5173` for the frontend and `http://localhost:5000` for the backend API.
 

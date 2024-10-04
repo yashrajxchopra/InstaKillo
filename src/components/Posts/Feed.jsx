@@ -6,16 +6,19 @@ import heartIcon from "./img/icon/heart-nofill.png";
 import heartIconF from "./img/icon/heart-fill.png";
 import commentIcon from "./img/icon/comment.png";
 import sendIcon from "./img/icon/send.png";
+import logout from "./img/icon/logout.png";
 import addIcon from './img/icon/add.png';
 import redheartIcon from "./img/icon/redheart.png";
 import logoIcon from "./img/icon/logo.png";
 import post1 from "./img/posts/post1.png";
 import userImage from "./img/user.png";
-import { toast } from 'react-toastify';
+import { toast, ToastContainer, useToast } from 'react-toastify';
 import axios from 'axios';
 import TestPost from './TestPost';
 import TestCreate from '../CreatePost/TestCreate';
 import { Button, useDisclosure } from '@chakra-ui/react';
+import logoutUser from '../../hooks/logout';
+
 import {
     Modal,
     ModalOverlay,
@@ -45,6 +48,16 @@ const feed = () => {
     const toggleLike = () => {
         setLikeIcon(likeIcon === redheartIcon ? heartIconF : redheartIcon);
     };
+
+    const handleLogout = ()=>{
+        if(logoutUser()){
+            toast.success('Logout Successful')
+            navigate('/login')
+        }
+        else{
+            toast.error('There was a problem')
+        }
+    }
 
     const updatePostData = (postId, updatedPost) => {
         setPosts((prevPosts) =>
@@ -115,7 +128,7 @@ const feed = () => {
                         </ModalFooter>
                         </ModalContent>
                     </Modal>
-                    <a href="/" className="nav-links"><img src={userImage} className="nav-icon user-profile" alt="" /></a>
+                    <img src={logout} className="nav-icon user-profile" alt="" onClick={handleLogout}/>
                 </div>
             </nav>
             
