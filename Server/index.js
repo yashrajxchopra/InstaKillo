@@ -295,6 +295,17 @@ app.post('/api/NoInputLogin',authenticateToken, async (req, res) =>{
     console.log("error")
   }
   });
+//get userId from token
+app.post('/api/getUserId',authenticateToken, (req,res)=>{
+  try{
+    const _id = req.user.userId
+    //console.log(_id)
+    return res.json({_id})
+  }
+  catch(err){
+    return res.status(400).json({error: 'Error occured'});
+  }
+});
 app.get('/api/test', (req, res) => {
   res.send(`
     <!DOCTYPE html>

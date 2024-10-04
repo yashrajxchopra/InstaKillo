@@ -27,7 +27,7 @@ const style = {
 
 
 export default function TestPost({post, updatePostData}) {
-    const userId = '663f56124af70d8faa6f85ac';
+    //const userId = '663f56124af70d8faa6f85ac';
     const [likeIcon, setLikeIcon] = useState(heartIcon);
     const [isOpen, SetIsOpen] = useState(false);
     const [userData, setUserData] = useState(null);
@@ -38,6 +38,35 @@ export default function TestPost({post, updatePostData}) {
     const handleClick = ()=>{
         navigate(`/p/`)
     }
+
+    const checkLike = async (likeArray) =>{
+        try{
+            const token  = localStorage.getItem('token');
+            const user_Id = await axios.post('http://localhost:5000/api/getUserId',{},
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`  
+                    }
+                }
+            );
+            console.log(user_Id)
+            if(likeArray.includes(user_Id.data._id)){
+                setLikeIcon(redheartIcon);
+            }
+            else{
+                setLikeIcon(heartIcon);
+            }
+        }
+        catch(error){
+            if (error.response) {
+                toast.error('Error adding like:', error.response.data.error); 
+              } else {
+                toast.error('Cannot get to server', error.message); 
+                console.log(error)
+              }
+          }
+
+        }
     
     const getUserPfp = async(userId) => {
         try {
@@ -79,7 +108,22 @@ export default function TestPost({post, updatePostData}) {
                 }
             );
             updatePostData(post._id, response.data.post);
-            setLikeIcon(likeIcon === redheartIcon ? heartIcon : redheartIcon);
+            checkLike(response.data.post.likes);
+            // const user_Id = await axios.post('http://localhost:5000/api/getUserId',{},
+            //     {
+            //         headers: {
+            //             'Authorization': `Bearer ${token}`  
+            //         }
+            //     }
+            // );
+            // console.log(user_Id)
+            // if(response.data.post.likes.includes(user_Id.data._id)){
+            //     setLikeIcon(redheartIcon);
+            // }
+            // else{
+            //     setLikeIcon(heartIcon);
+            // }
+            //setLikeIcon(likeIcon === redheartIcon ? heartIcon : redheartIcon);
           } catch (error) {
             if (error.response) {
                 toast.error('Error adding like:', error.response.data.error); 
@@ -115,21 +159,22 @@ export default function TestPost({post, updatePostData}) {
 
     };
     useEffect(() => {
-        async function fetchUserData() {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/user/${post.createdBy}`); 
-                setUserData(response.data);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        }
+        // async function fetchUserData() {
+        //     try {
+        //         const response = await axios.get(`http://localhost:5000/api/user/${post.createdBy}`); 
+        //         setUserData(response.data);
+        //     } catch (error) {
+        //         console.error('Error fetching user data:', error);
+        //     }
+        // }
 
-        fetchUserData();
-        if(post.likes.includes(userId))
-        {
-            setLikeIcon(redheartIcon);
-        }
-    }, [post]);
+        // fetchUserData();
+        // if(post.likes.includes(userId))
+        // {
+        //     setLikeIcon(redheartIcon);
+        // }
+        checkLike(post.likes);
+    }, [post])
     
   return (
         <div className="post-container">

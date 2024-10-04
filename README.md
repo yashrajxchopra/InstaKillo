@@ -71,6 +71,7 @@ Once the application is running, you can register a new user and log in to acces
 - **POST /api/auth/login** - Log in a user
 - **GET /api/user/profile** - Retrieve user profile
 - **POST /api/posts** - Upload media files
+- **POST /api/test** - test API is working
 
 Refer to the API documentation within the project for more details on request and response formats.
 
