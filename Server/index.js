@@ -14,7 +14,6 @@ const generateRandomString = () => {
 }
 
 
-
 mongoose.set('strictQuery', true);
 mongoose.connect("mongodb://localhost:27017/mongoDb", {
     useNewUrlParser: true,

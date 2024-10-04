@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as a parent image
-FROM node:16
+FROM node:18-alpine
 
 # Set the working directory in the container
 WORKDIR /app
@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5000
 
 # Command to run your application
-CMD ["nodemon", "index.js"]
+CMD ["npx", "nodemon", "index.js"]
