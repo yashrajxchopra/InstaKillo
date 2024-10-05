@@ -272,8 +272,8 @@ app.get('/api/user/:id', async (req, res) => {
     const user = await User.findById(userId);
 
     if (user) {
-      const { username, pfp, bio } = user;
-      res.json({ username, pfp, bio});
+      const { username, bio, pfp } = user;
+      res.json({ username, bio, pfp});
     } else {
       res.status(404).json({ message: 'User not found' });
     }

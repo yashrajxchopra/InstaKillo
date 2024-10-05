@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const fetchUserData = async (createdBy)=>{
     try {
         const response = await axios.get(`http://localhost:5000/api/user/${createdBy}`); 

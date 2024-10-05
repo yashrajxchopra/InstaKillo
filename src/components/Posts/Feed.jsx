@@ -19,7 +19,7 @@ import TestCreate from '../CreatePost/TestCreate';
 import { Button, useDisclosure } from '@chakra-ui/react';
 import logoutUser from '../../hooks/logout';
 import { FixedSizeList as List } from 'react-window';
-
+import  fetchUserData from '../../hooks/fetchUserData'
 import {
     Modal,
     ModalOverlay,
@@ -37,6 +37,7 @@ const feed = () => {
     const [heartIconn, setHeartIcon] = useState(redheartIcon);
     const [activityVisible, setActivityVisible] = useState(false);
     const [posts, setPosts] = useState([]);
+    const [userData, setUserData] = useState();
     const { isOpen, onOpen, onClose } = useDisclosure()
     const navigate = useNavigate();
     //const postId = ['6612e23873da0373eb6b9c13', '6612e2704ba8d67cc327495a'];
@@ -75,6 +76,26 @@ const feed = () => {
                     'Authorization': `Bearer ${token}` // Attach the token as a Bearer token in the Authorization header
                 }
             });
+            try{
+                const userId = await axios.post('http://localhost:5000/api/getUserId',{},
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`  
+                        }
+                    }
+                )
+                const tempUserData = await fetchUserData(userId.data._id)
+                console.log(tempUserData)
+                setUserData(tempUserData)
+            }
+            catch(error){
+                toast.error('Error getting user Profile')
+                setUserData({
+                    username: 'Not Found',
+                    bio: 'Not found',
+                    pfp: '../../../Server/uploads\\defaultpfp.png'
+                })
+            }
             setPosts(response.data);
             console.log(response.data)
           } catch (error) {
@@ -160,11 +181,16 @@ const feed = () => {
 
             <div className="user-about-section">
                 <div className="user-info">
-                    <img src={userImage} className="user-dp" alt="" />
-                    <div className="info-container">
-                        <h1 className="name">Yashraj Chopra</h1>
-                        <p>This is the bio of the profile.</p>
-                    </div>
+                    {userData ? (<img src={userData.pfp} className="user-dp" alt="" />):( <img src={'../../../Server/uploads\\defaultpfp.png'} className="user-dp" alt="" />)}
+                    {userData ? (<div className="info-container">
+                        <h1 className="name">{userData.username}</h1>
+                        <p>{userData.bio}</p>
+                    </div>):
+                    (<div className="info-container">
+                        <h1 className="name">Loading</h1>
+                        <p>Loading</p>
+                    </div>)}
+                    
                 </div>
                 <h1 className="suggestion-heading">suggestions</h1>
                 <div className="suggestion-container">
