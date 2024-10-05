@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import "./styles.css";
 import searchIcon from "./img/icon/search.png";
 import homeIcon from "./img/icon/home.png";
@@ -15,7 +15,6 @@ import userImage from "./img/user.png";
 import { toast, ToastContainer, useToast } from 'react-toastify';
 import axios from 'axios';
 import TestPost from './TestPost';
-import TestCreate from '../CreatePost/TestCreate';
 import { Button, useDisclosure } from '@chakra-ui/react';
 import logoutUser from '../../hooks/logout';
 import { FixedSizeList as List } from 'react-window';
@@ -30,6 +29,7 @@ import {
     ModalCloseButton,
   } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom';
+import CreatePost from '../CreatePost/CreatePost';
 
 
 const feed = () => { 
@@ -38,17 +38,18 @@ const feed = () => {
     const [activityVisible, setActivityVisible] = useState(false);
     const [posts, setPosts] = useState([]);
     const [userData, setUserData] = useState();
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [createModal,  setCreateModal] = useState(false);
+    const openModal = () => setCreateModal(true);
+    const closeModal = () => setCreateModal(false);
+
+    
     const navigate = useNavigate();
     //const postId = ['6612e23873da0373eb6b9c13', '6612e2704ba8d67cc327495a'];
+
 
     const toggleActivity = () => {
         setActivityVisible(!activityVisible);
         setHeartIcon(heartIconn === heartIcon ? heartIconF : heartIcon);
-    };
-
-    const toggleLike = () => {
-        setLikeIcon(likeIcon === redheartIcon ? heartIconF : redheartIcon);
     };
 
     const handleLogout = ()=>{
@@ -85,7 +86,6 @@ const feed = () => {
                     }
                 )
                 const tempUserData = await fetchUserData(userId.data._id)
-                console.log(tempUserData)
                 setUserData(tempUserData)
             }
             catch(error){
@@ -112,7 +112,8 @@ const feed = () => {
 
         };
         fetchPost();
-      }, []); 
+
+      },[]); 
     //   if(posts.length === 0)
     //   {
     //     return(<div>...Loading</div>)
@@ -136,20 +137,10 @@ const feed = () => {
                             ....
                         </div>
                     </div>
-                    <img src={addIcon} onClick={onOpen} className="nav-icon" alt=""/>
-                    <Modal className="custom-modal" onClose={onClose} isOpen={isOpen} isCentered>
-                        <ModalOverlay />
-                        <ModalContent>
-                        <ModalHeader>Modal Title</ModalHeader>
-                        <ModalCloseButton />
-                        <ModalBody>
-                            <p>Hello from yc</p>
-                        </ModalBody>
-                        <ModalFooter>
-                            <Button onClick={onClose}>Close</Button>
-                        </ModalFooter>
-                        </ModalContent>
-                    </Modal>
+                    <img src={addIcon} onClick={openModal} className="nav-icon" alt=""/>
+                    {createModal ? (
+                        <CreatePost closeModal={closeModal}/>
+                    ):('')}
                     <img src={logout} className="nav-icon user-profile" alt="" onClick={handleLogout}/>
                 </div>
             </nav>

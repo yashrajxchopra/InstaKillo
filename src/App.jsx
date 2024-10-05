@@ -23,7 +23,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/post" element={<TestPost/>} />
          <Route path="/" element={<Feed/>} />
-        <Route path="/createpost" element={<CreatePost />} />
       </Routes>
     </Router>
     <ToastContainer position="bottom-center"/>

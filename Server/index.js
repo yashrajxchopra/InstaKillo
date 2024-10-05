@@ -7,6 +7,8 @@ const multer = require('multer');
 const path = require('path');
 const { generateToken, authenticateToken, tokenDecoder, verifyToken } = require('./jwtUtils');
 const { error } = require('console');
+require('dotenv').config();
+
 
 
 const generateRandomString = () => {
@@ -15,10 +17,11 @@ const generateRandomString = () => {
 
 
 mongoose.set('strictQuery', true);
-mongoose.connect("mongodb://localhost:27017/mongoDb", {
+mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
-});
+}).then(() => console.log('MongoDB connected successfully'))
+.catch((err) => console.log('MongoDB connection error:', err));
 
 const app = express();
 
@@ -145,6 +148,7 @@ app.post('/api/login', async (req, res) => {
 // Create post endpoint
 app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res) => {
   try {
+    const userId = req.user.userId;
     const allowedExtensions = ['jpg', 'jpeg', 'png'];
     const fileName = req.file.filename;
     const fileNameParts = fileName.split('.');
@@ -156,23 +160,20 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
     {
       return res.status(400).json({error: 'Not a image'});
     }
-    const { caption, comments, likes} = req.body;
+    const { caption } = req.body;
     const imagePath = req.file ? path.join('../../../Server/uploads', req.file.filename) : null;
-    const token = req.headers.authorization.split(' ')[1];
-    const creator = tokenDecoder(token);
-    console.log(creator);
     const newPost = new Post({
-      caption,
-      createdBy: creator.userId,
+      caption: caption,
+      createdBy:userId,
       image: imagePath,
-      comments,
-      likes
+      comments: [],
+      likes: []
     });
 
     
     await newPost.save();
     console.log(req.user._id+"  " +newPost._id )
-    const user = await User.findById(creator.userId);
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
