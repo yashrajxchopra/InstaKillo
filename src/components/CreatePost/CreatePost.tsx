@@ -4,7 +4,7 @@ import axios from 'axios';
 export default function CreatePost() {
   const [userId, setUserId] = useState('');
   const [caption, setCaption] = useState('');
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState();
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleImageChange = (e) => {

@@ -18,6 +18,7 @@ import TestPost from './TestPost';
 import TestCreate from '../CreatePost/TestCreate';
 import { Button, useDisclosure } from '@chakra-ui/react';
 import logoutUser from '../../hooks/logout';
+import { FixedSizeList as List } from 'react-window';
 
 import {
     Modal,
@@ -136,6 +137,19 @@ const feed = () => {
             {
                 return <Post key={post._id + index}post={post}/>;
             })} */}
+            {/* <div className='posts'>
+            <List
+                height={2000} // height of the visible area
+                itemCount={posts.length} // number of items to render
+                itemSize={800} // height of each post
+                width={'100%'}
+            >
+                {({ index, style }) => (
+                    <TestPost post={posts[index]} key={index} updatePostData={updatePostData} />
+                )}
+            </List>
+            </div> */}
+
             <div className='posts'>
             {posts.map((post, index) =>
             {

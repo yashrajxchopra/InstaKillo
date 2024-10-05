@@ -264,7 +264,7 @@ app.get('/api/posts/:id', async (req, res) => {
   }
   });
 
-// Endpoint to retrieve username and pfp from _id
+// Endpoint to retrieve username, bio and pfp from _id
 app.get('/api/user/:id', async (req, res) => {
   const userId = req.params.id;
 
@@ -272,8 +272,8 @@ app.get('/api/user/:id', async (req, res) => {
     const user = await User.findById(userId);
 
     if (user) {
-      const { username, pfp } = user;
-      res.json({ username, pfp });
+      const { username, pfp, bio } = user;
+      res.json({ username, pfp, bio});
     } else {
       res.status(404).json({ message: 'User not found' });
     }
@@ -281,6 +281,7 @@ app.get('/api/user/:id', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+//autologin
 app.post('/api/NoInputLogin',authenticateToken, async (req, res) =>{
    try{
     const email = req.user.email;
