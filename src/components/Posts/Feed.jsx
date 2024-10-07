@@ -9,7 +9,7 @@ import sendIcon from "./img/icon/send.png";
 import logout from "./img/icon/logout.png";
 import addIcon from './img/icon/add.png';
 import redheartIcon from "./img/icon/redheart.png";
-import logoIcon from "./img/icon/logo.png";
+import logo from '../LogIn/logo.png'
 import post1 from "./img/posts/post1.png";
 import userImage from "./img/user.png";
 import { toast, ToastContainer, useToast } from 'react-toastify';
@@ -19,15 +19,6 @@ import { Button, useDisclosure } from '@chakra-ui/react';
 import logoutUser from '../../hooks/logout';
 import { FixedSizeList as List } from 'react-window';
 import  fetchUserData from '../../hooks/fetchUserData'
-import {
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-  } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom';
 import CreatePost from '../CreatePost/CreatePost';
 
@@ -41,8 +32,8 @@ const feed = () => {
     const [createModal,  setCreateModal] = useState(false);
     const openModal = () => setCreateModal(true);
     const closeModal = () => setCreateModal(false);
+    const API_URL= import.meta.env.VITE_API_URL;
 
-    
     const navigate = useNavigate();
     //const postId = ['6612e23873da0373eb6b9c13', '6612e2704ba8d67cc327495a'];
 
@@ -72,13 +63,13 @@ const feed = () => {
         const fetchPost = async () => {
           try {
             const token  = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:5000/api/posts', {
+            const response = await axios.get(`${API_URL}/api/posts`, {
                 headers: {
                     'Authorization': `Bearer ${token}` // Attach the token as a Bearer token in the Authorization header
                 }
             });
             try{
-                const userId = await axios.post('http://localhost:5000/api/getUserId',{},
+                const userId = await axios.post(`${API_URL}/api/getUserId`,{},
                     {
                         headers: {
                             'Authorization': `Bearer ${token}`  
@@ -122,7 +113,7 @@ const feed = () => {
     return (
         <div className='feed'>
             <nav className="navbar">
-                <img src={logoIcon} className="logo" alt="" />
+                <img src={logo} className="logo" alt="" />
                 <form className="search-box">
                     <input type="text" placeholder="search" name="search-query" id="search-input" />
                     <button className="search-btn" type="submit"><img src={searchIcon} className="search-icon" alt="" /></button>
@@ -145,22 +136,7 @@ const feed = () => {
                 </div>
             </nav>
             
-            {/* {posts.map((post, index) =>
-            {
-                return <Post key={post._id + index}post={post}/>;
-            })} */}
-            {/* <div className='posts'>
-            <List
-                height={2000} // height of the visible area
-                itemCount={posts.length} // number of items to render
-                itemSize={800} // height of each post
-                width={'100%'}
-            >
-                {({ index, style }) => (
-                    <TestPost post={posts[index]} key={index} updatePostData={updatePostData} />
-                )}
-            </List>
-            </div> */}
+
 
             <div className='posts'>
             {posts.map((post, index) =>

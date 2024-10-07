@@ -1,2 +1,6 @@
 .env
 Server.rar
+package-lock.json
+
+node_modules/
+uploads/

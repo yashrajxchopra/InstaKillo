@@ -101,6 +101,30 @@ const Post = mongoose.model('Posts', PostSchema);
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password, email, fullName } = req.body;
+
+    if (!username || !password || !email || !fullName) {
+      return res.status(400).json({ error: 'All fields are required.' });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format.' });
+    }
+
+    const existingUser = await User.findOne({ 
+      $or: [{ username }, { email }] 
+    });
+    
+    if (existingUser) {
+      // Check if the conflict is with username or email
+      if (existingUser.username === username) {
+        return res.status(400).json({ error: 'Username is already in use.' });
+      }
+      if (existingUser.email === email) {
+        return res.status(400).json({ error: 'Email is already in use.' });
+      }
+    }
+
     bio = '';
     const profileImagePath = '../../../Server/uploads\\defaultpfp.png'
 
@@ -117,7 +141,7 @@ app.post('/api/register', async (req, res) => {
 
     await newUser.save();
 
-    res.status(200).json({ message: 'User created successfully', user: newUser });
+    res.status(200).json({ message: 'User created successfully.', user: newUser });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -132,7 +156,7 @@ app.post('/api/login', async (req, res) => {
       }
       const user = await User.findOne({ email });
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'User not found.' });
       }
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {

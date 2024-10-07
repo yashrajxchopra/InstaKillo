@@ -1,4 +1,7 @@
-.container{
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* .container{
     height: 100vh;
     width: 100%;
     display: flex;
@@ -43,4 +46,4 @@ span{
 .input-div h3{
     color: black;
     margin-left: 6em;
-}
+} */

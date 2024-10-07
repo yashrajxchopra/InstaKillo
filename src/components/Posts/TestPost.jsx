@@ -17,7 +17,8 @@ import { TbArrowAutofitRight } from 'react-icons/tb';
 const style = {
     height: 'auto',
     width: '500px',
-    marginTop: '70px'
+    marginTop: '70px',
+    marginLeft: '180px'
   };
   const userStyle = {
     fontFamily: "'Arial'", 
@@ -36,6 +37,7 @@ export default function TestPost({post, updatePostData}) {
     const [comment, setComment] = useState('');
     const [commentData, setCommentData] = useState([]);
     const navigate = useNavigate();
+    const API_URL= import.meta.env.VITE_API_URL;
 
     const handleClick = ()=>{
         navigate(`/p/`)
@@ -43,7 +45,7 @@ export default function TestPost({post, updatePostData}) {
 
     const fetchUserData = async (createdBy)=>{
             try {
-                const response = await axios.get(`http://localhost:5000/api/user/${createdBy}`); 
+                const response = await axios.get(`${API_URL}/api/user/${createdBy}`); 
                 console.log(response.data)
                 return response.data;
             } catch (error) {
@@ -54,7 +56,7 @@ export default function TestPost({post, updatePostData}) {
     const checkLike = async (likeArray) =>{
         try{
             const token  = localStorage.getItem('token');
-            const user_Id = await axios.post('http://localhost:5000/api/getUserId',{},
+            const user_Id = await axios.post(`${API_URL}/api/getUserId`,{},
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`  
@@ -82,7 +84,7 @@ export default function TestPost({post, updatePostData}) {
     
     const getUserPfp = async(userId) => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/user/${userId}`);
+            const response = await axios.get(`${API_URL}/api/user/${userId}`);
             setProfilePictures(prev => [...prev, response.data.pfp]);
         } catch (error) {
             console.error("Error fetching profile picture:", error);
@@ -134,7 +136,7 @@ export default function TestPost({post, updatePostData}) {
         //setLikeIcon(likeIcon === redheartIcon ? heartIcon : redheartIcon);
         try {
             const token  = localStorage.getItem('token');
-            const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/like`, {},
+            const response = await axios.post(`${API_URL}/api/posts/${post._id}/like`, {},
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`  
@@ -174,7 +176,7 @@ export default function TestPost({post, updatePostData}) {
         if(!token){
             throw new Error("No credentials found");
         }
-        const response = await axios.post(`http://localhost:5000/api/posts/${post._id}/comment`,
+        const response = await axios.post(`${API_URL}/api/posts/${post._id}/comment`,
             { comment: comment }, 
             {
                 headers: {
@@ -186,7 +188,7 @@ export default function TestPost({post, updatePostData}) {
         setComment('');
         toast.success('Comment Added')
         try{
-            const user_Id = await axios.post('http://localhost:5000/api/getUserId',{},
+            const user_Id = await axios.post(`${API_URL}/api/getUserId`,{},
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`  
@@ -230,6 +232,7 @@ export default function TestPost({post, updatePostData}) {
     }, [post])
     
   return (
+    <>
         <div className="post-container">
             
                     <div className="post" style={style}>
@@ -318,5 +321,6 @@ export default function TestPost({post, updatePostData}) {
                 )}
             </div>
         </div>
+        </>
   )
 }

@@ -32,7 +32,7 @@ export default function Post({post}) {
   //const [post, setPost] = useState(null);
   const [like, setLike] = useState(false);
   const [comment, setComment] = useState('');
-  
+  const API_URL= import.meta.env.API_URL;
 
 
   const handleLike = () => {
