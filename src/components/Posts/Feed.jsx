@@ -21,6 +21,7 @@ import { FixedSizeList as List } from 'react-window';
 import  fetchUserData from '../../hooks/fetchUserData'
 import { useNavigate } from 'react-router-dom';
 import CreatePost from '../CreatePost/CreatePost';
+import Navbar from './Navbar';
 
 
 const feed = () => { 
@@ -111,34 +112,14 @@ const feed = () => {
     //   }
 
     return (
-        <div className='feed'>
-            <nav className="navbar">
-                <img src={logo} className="logo" alt="" />
-                <form className="search-box">
-                    <input type="text" placeholder="search" name="search-query" id="search-input" />
-                    <button className="search-btn" type="submit"><img src={searchIcon} className="search-icon" alt="" /></button>
-                </form>
-                <div className="nav-links">
-                    <a href="/" className="nav-links"><img src={homeIcon} className="nav-icon" alt="" /></a>
-                    <div className="activity-log">
-                        <img src={heartIconn} className="nav-icon" alt=""  onClick={toggleActivity} />
-                        <div className={`activity-container ${activityVisible ? '' : 'hide'}`}>
-                            notifications...
-                            ....
-                            ....
-                        </div>
-                    </div>
-                    <img src={addIcon} onClick={openModal} className="nav-icon" alt=""/>
-                    {createModal ? (
-                        <CreatePost closeModal={closeModal}/>
-                    ):('')}
-                    <img src={logout} className="nav-icon user-profile" alt="" onClick={handleLogout}/>
-                </div>
-            </nav>
-            
+        <div className='flex'>
+            <div className='navbar'>
+            <Navbar openModal={openModal}/>
+            </div>
+            {createModal && <CreatePost closeModal={closeModal}/>}
 
 
-            <div className='posts'>
+            <div className="flex items-center justify-center  flex-col w-auto ">
             {posts.map((post, index) =>
             {
                 return <TestPost post={post} key={index} updatePostData={updatePostData}/>;

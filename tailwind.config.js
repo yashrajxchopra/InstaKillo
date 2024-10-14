@@ -7,6 +7,7 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: ['@tailwindcss/forms'],
+  plugins: ['@tailwindcss/forms', 'tailwind-scrollbar-hide'],
+            
 }
 

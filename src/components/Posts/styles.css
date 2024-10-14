@@ -21,13 +21,41 @@ body{
     top: 0;
     left: 0;
     z-index: 9;
-    background: #fff;
-    border-bottom: 1px solid #999;
-    padding: 10px 5vw;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
 }
+@keyframes pulse-border {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.pulse-border {
+    border-bottom: 4px solid transparent; /* Adjust thickness as needed */
+    background-image: linear-gradient(90deg, rgba(255, 0, 0, 1), rgba(0, 255, 0, 1), rgba(0, 0, 255, 1), rgba(255, 255, 0, 1), rgba(255, 0, 255, 1)); /* Gradient colors */
+    background-size: 400% 100%; /* Size of the gradient */
+    animation: pulse-border 2s ease-in-out infinite; /* Adjust duration as needed */
+    background-clip: text; /* Ensure the gradient is clipped to the bottom */
+    padding-bottom: 8px; /* Space for the bottom border */
+    position: relative;
+}
+
+.pulse-border::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 4px; /* Adjust thickness as needed */
+    background-image: linear-gradient(90deg, rgba(255, 0, 0, 1), rgba(0, 255, 0, 1), rgba(0, 0, 255, 1), rgba(255, 255, 0, 1), rgba(255, 0, 255, 1));
+    background-size: 400% 100%; /* Size of the gradient */
+    animation: pulse-border 2s ease-in-out infinite; /* Adjust duration as needed */
+}
+
 
 .logo{
     height: 40px;
@@ -65,17 +93,6 @@ body{
     height: 20px;
 }
 
-.nav-links{
-    display: flex;
-    align-items: center;
-    gap: 30px;
-}
-
-.nav-icon{
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
-}
 
 .user-profile{
     width: 30px;
@@ -149,152 +166,10 @@ body{
 
 /* post section */
 
-.post-container{
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-left: 0;
-}
 
-.post{
-    width: 100%;
-    height: 800px;
-    border: 1px solid #999;
-    background: #fff;
-}
 
-.post-header{
-    display: flex;
-    align-items: center;
-    padding: 1.2rem;
-    gap: 10px;
-}
 
-.post-header .user-icon{
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-}
 
-.post-header .username{
-    font-size: .9rem;
-    font-weight: 600;
-}
-
-.post-feed{
-    width: 100%;
-    height: 500px;
-    position: relative;
-}
-
-.post-img-container{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    overflow: hidden;
-}
-
-.post-img-container img{
-    min-width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: .5s;
-}
-
-.post-detail{
-    padding: 1.2rem;
-    width: 100%;
-}
-
-.detail-intracables{
-    display: flex;
-    gap: 10px;
-}
-
-.detail-intracables img{
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-}
-
-.likes{
-    color: #a0a0a0;
-    display: flex;
-    margin: 10px 0;
-}
-
-.post .username{
-    font-weight: 600;
-}
-
-.post-des{
-    margin: 20px 0;
-    font-size: .9rem;
-    line-height: 1.5rem;
-    opacity: 0.7;
-}
-
-.comment-box {
-    border: 1px solid #999;
-    height: 42px;
-
-  }
-
-#comment-input::placeholder{
-    color: #bbb;
-}
-
-#comment-input:focus{
-    outline: 1px solid #2f2f2f;
-}
-
-.add-comment-btn{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60px;
-    height: 40px;
-    cursor: pointer;
-    border: none;
-    outline: none;
-    background: #fff;
-}
-
-.add-comment-btn img{
-    width: 30px;
-    height: 30px;
-}
-
-.comment-count{
-    font-weight: 600;
-    color: #a0a0a0;
-    font-size: .8rem;
-    display: flex;
-    margin-top: 10px;
-    margin-left: 0;
-    opacity: 0.7;
-}
-
-.post-overlays{
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    pointer-events: none;
-}
-
-.like-icon{
-    width: 200px;
-    opacity: 0;
-    transition: .5s;
-}
-
-.like-icon.show{
-    opacity: 1;
-    animation: popup 2s forwards 1;
-}
 
 @keyframes popup{
     0%{
@@ -451,89 +326,8 @@ body{
     cursor: pointer;
 }
 
-.comment-section{
-    display: flex;
-    flex-direction: column;
-}
-.comment-header{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-
-}
-.comment-header h2{
-    margin-left: 140px;
-}
-
-.comment-header img {
-    width: 20px; 
-    height: 20px; 
-    cursor: pointer;
-    margin-top: 7px;
-    margin-right: 8px;
-}
 
 
-  .comment-list {
-    overflow-y: auto;
-    overflow: auto;
-    max-height: 550px;
-    height: 550px;
-    flex-grow: 1;
-    border-top: 0.5mm solid rgba(0, 0, 0, 0.5);
-    border-bottom: 0.5mm solid rgba(0, 0, 0, 0.5);
-    padding: 10px 20px;
-    width: 100%;
-    box-sizing: border-box;
-    display: block;
-    margin-bottom: 10px;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer and Edge */
-  }
-  .comment-list::-webkit-scrollbar {
-    display: none;
-    opacity: 0;
-    width: 0;
-  }
-  .comment {
-    width: 100%;
-    display: flex;
-    align-items: flex-start;
-    justify-content: left;
-    font-family: Helvetica Neue;
-    font-size: 12px;
-    margin: 15px 0;
-  }
-  .comment img,
-  .new-comment img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
-  .comment .desc {
-    width: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 5px;
-  }
-  .comment .desc span {
-    font-weight: 400;
-    color: rgb(100, 100, 100);
-  }
-  .comment i {
-    margin-left: 10px;
-    font-size: 18px;
-  }
-  .comment img,
-  .new-comment img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
   .new-comment input {
     flex-grow: 1;
     height: 60px;
@@ -544,15 +338,8 @@ body{
     background: transparent;
   }
 
-  .no-comments{
-    margin-left: 130px;
-  }
-  .posts{
-    display: flex;
-    flex-direction: column;
-  }
   
-  @media screen and (max-width: 1191px) {
+  @media screen and (max-width: 1110px) {
     .user-about-section {
         display: none;
     }

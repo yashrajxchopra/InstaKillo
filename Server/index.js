@@ -8,6 +8,8 @@ const path = require('path');
 const { generateToken, authenticateToken, tokenDecoder, verifyToken } = require('./jwtUtils');
 const { error } = require('console');
 require('dotenv').config();
+const fs = require('fs');
+
 
 
 
@@ -182,6 +184,7 @@ app.post('/api/posts',authenticateToken, upload.single('image'), async (req, res
     }
     if(!allowedExtensions.includes(fileExtension))
     {
+      fs.unlinkSync(path.join('uploads', fileName));
       return res.status(400).json({error: 'Not a image'});
     }
     const { caption } = req.body;
@@ -315,7 +318,6 @@ app.post('/api/NoInputLogin',authenticateToken, async (req, res) =>{
     return res.status(404).json({ error: 'User not found' });
   }
   res.status(200).json({ message: 'Login successful'});
-  console.log("success")
   } catch (error) {
     res.status(400).json({ error: error.message });
     console.log("error")
