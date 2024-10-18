@@ -339,7 +339,7 @@ body{
   }
 
   
-  @media screen and (max-width: 1110px) {
+  @media screen and (max-width: 800px) {
     .user-about-section {
         display: none;
     }

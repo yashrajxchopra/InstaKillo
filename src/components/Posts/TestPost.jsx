@@ -14,12 +14,12 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { TbArrowAutofitRight } from "react-icons/tb";
 
-const style = {
-  height: "auto",
-  width: "500px",
-  marginTop: "70px",
-  marginLeft: "180px",
-};
+// const style = {
+//   height: "auto",
+//   width: "500px",
+//   marginTop: "70px",
+//   marginLeft: "180px",
+// };
 const userStyle = {
   fontFamily: "'Arial'",
   fontSize: "13px",
@@ -235,146 +235,147 @@ export default function TestPost({ post, updatePostData }) {
 
   return (
     <>
-    <div className="w-full flex float-left item-center justify-center overflow-auto scrollbar-hide ">
-      <div
-        className="w-full h-auto round-md border border-gray-400 bg-white rounded-md"
-        style={style}
-      >
-        {!isOpen ? (
-          <div className="flex justify-center items-center p-2 gap-2.5">
-            {userData ? ( // Conditionally render user data if available
-              <>
-                <img
-                  src={userData.pfp}
-                  className="w-7 h-7 rounded-full"
-                  alt=""
-                />
-                <p className="">{userData.username}</p>
-              </>
-            ) : (
-              <p>Loading...</p>
-            )}
-          </div>
-        ) : (
-          <div className="flex flex-col scrollbar-hide h-[36.3rem]">
-            <div className="flex items-center justify-between w-full h-8">
-              <h2 className="flex-grow text-center">Comments</h2>
-              <img
-                src={close}
-                className="w-5 h-5 cursor-pointer mt-2 mr-2"
-                onClick={toggleComment}
-                alt="close"
-              />
-            </div>
-
-            <div className="overflow-auto max-h-[550px] h-[550px] flex-grow border-t border-b border-gray-500 px-4 py-2 w-full box-border mb-2 sm:px-5 sm:py-2.5 md:max-h-[600px] lg:max-h-[650px] scrollbar-hide">
-              {post.comments.length === 0 && (
-                <div className="flex justify-center items-center h-full">
-                  <span>No Comments</span>
-                </div>
+      <div className="flex justify-center items-center min-h-screen m-0">
+        <div className="w-full sm:w-11/12 md:w-9/12 lg:w-2/3 max-w-2xl h-auto rounded-md border border-gray-400 bg-white">
+          {!isOpen ? (
+            <div className="flex justify-center items-center p-2 gap-2.5">
+              {userData ? ( 
+                <>
+                  <img
+                    src={userData.pfp}
+                    className="w-7 h-7 rounded-full"
+                    alt=""
+                  />
+                  <p className="">{userData.username}</p>
+                </>
+              ) : (
+                <p>Loading...</p>
               )}
-
-              {post.comments.map((com, index) => (
-                <div
-                  className="w-full flex items-start justify-start font-sans text-xs my-4"
-                  key={index}
-                >
-                  {commentData[index] ? (
-                    <img
-                      src={commentData[index].pfp}
-                      onClick={handleClick}
-                      className="w-10 h-10 rounded-full mr-2.5"
-                      alt=""
-                      style={{ cursor: "pointer" }}
-                    />
-                  ) : (
-                    <img
-                      src="../../../Server/uploads\\defaultpfp.png"
-                      onClick={handleClick}
-                      className="w-10 h-10 rounded-full mr-2.5"
-                      alt=""
-                      style={{ cursor: "pointer" }}
-                    />
-                  )}
-
-                  <span>
-                    {commentData[index] ? (
-                      <p style={userStyle} onClick={handleClick}>
-                        {commentData[index].user}
-                      </p>
-                    ) : (
-                      <p style={userStyle} onClick={handleClick}>
-                        Loading
-                      </p>
-                    )}
-                    <p>{com.comment}</p>
-                    <div className="w-38 flex items-center justify-between mt-1.25">
-                      {getTimeAgoString(com.createdAt)}
-                    </div>
-                  </span>
-                </div>
-              ))}
             </div>
-            <div className="flex items-center">
-              <img
-                src={userImage}
-                className="w-10 h-10 m-2 rounded-full ml-2"
-                alt=""
-              />
-              <input
-                type="text"
-                placeholder="Add a comment..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="flex-grow h-15 m-2 font-sans text-sm outline-none border-0 bg-transparent"
-              />
-            </div>
-          </div>
-        )}
-        {!isOpen && (
-          <>
-            <div className="w-full relative">
-              <div className="w-full h-full flex items-center justify-center overflow-hidden bg-black">
+          ) : (
+            <div className="flex flex-col scrollbar-hide h-[36.3rem]">
+              <div className="flex items-center justify-between w-full h-8">
+                <h2 className="flex-grow text-center">Comments</h2>
                 <img
-                  src={post.image}
-                  alt=""
-                  className="object-cover h-80 w-auto" // Adjust height as needed
-                />
-              </div>
-            </div>
-
-            <div className="w-full p-2">
-              <div className="flex gap-3">
-                <img
-                  src={likeIcon}
-                  className="w-8 h-8 cursor-pointer"
-                  alt=""
-                  onClick={toggleLike}
-                />
-                <img
-                  src={commentIcon}
-                  className="w-8 h-8 cursor-pointer"
-                  alt=""
+                  src={close}
+                  className="w-5 h-5 cursor-pointer mt-2 mr-2"
                   onClick={toggleComment}
+                  alt="close"
                 />
-                <img src={sendIcon} className="w-8 h-8 cursor-pointer" alt="" />
               </div>
-              <span className="text-gray-400 flex mt-2">
-                {post.likes.length} likes
-              </span>
-              <p className="mt-2">{post.caption}</p>
-              <span className="text-gray-400 flex mt-2">
-                {post.comments.length} comments
-              </span>
-              <span className="text-gray-400 flex mt-2">
-                Uploded {getTimeAgoString(post.createdAt)}
-              </span>
+
+              <div className="overflow-auto max-h-[550px] h-[550px] flex-grow border-t border-b border-gray-500 px-4 py-2 w-full box-border mb-2 sm:px-5 sm:py-2.5 md:max-h-[600px] lg:max-h-[650px] scrollbar-hide">
+                {post.comments.length === 0 && (
+                  <div className="flex justify-center items-center h-full">
+                    <span>No Comments</span>
+                  </div>
+                )}
+
+                {post.comments.map((com, index) => (
+                  <div
+                    className="w-full flex items-start justify-start font-sans text-xs my-4"
+                    key={index}
+                  >
+                    {commentData[index] ? (
+                      <img
+                        src={commentData[index].pfp}
+                        onClick={handleClick}
+                        className="w-10 h-10 rounded-full mr-2.5"
+                        alt=""
+                        style={{ cursor: "pointer" }}
+                      />
+                    ) : (
+                      <img
+                        src="../../../Server/uploads\\defaultpfp.png"
+                        onClick={handleClick}
+                        className="w-10 h-10 rounded-full mr-2.5"
+                        alt=""
+                        style={{ cursor: "pointer" }}
+                      />
+                    )}
+
+                    <span>
+                      {commentData[index] ? (
+                        <p style={userStyle} onClick={handleClick}>
+                          {commentData[index].user}
+                        </p>
+                      ) : (
+                        <p style={userStyle} onClick={handleClick}>
+                          Loading
+                        </p>
+                      )}
+                      <p>{com.comment}</p>
+                      <div className="w-38 flex items-center justify-between mt-1.25">
+                        {getTimeAgoString(com.createdAt)}
+                      </div>
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center">
+                <img
+                  src={userImage}
+                  className="w-10 h-10 m-2 rounded-full ml-2"
+                  alt=""
+                />
+                <input
+                  type="text"
+                  placeholder="Add a comment..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="flex-grow h-15 m-2 font-sans text-sm outline-none border-0 bg-transparent"
+                />
+              </div>
             </div>
-          </>
-        )}
+          )}
+          {!isOpen && (
+            <>
+              <div className="w-full relative">
+                <div className="w-full h-full flex items-center justify-center overflow-hidden bg-black">
+                  <img
+                    src={post.image}
+                    alt=""
+                    className="object-cover h-80 w-auto" // Adjust height as needed
+                  />
+                </div>
+              </div>
+
+              <div className="w-full p-2">
+                <div className="flex gap-3">
+                  <img
+                    src={likeIcon}
+                    className="w-8 h-8 cursor-pointer"
+                    alt=""
+                    onClick={toggleLike}
+                  />
+                  <img
+                    src={commentIcon}
+                    className="w-8 h-8 cursor-pointer"
+                    alt=""
+                    onClick={toggleComment}
+                  />
+                  <img
+                    src={sendIcon}
+                    className="w-8 h-8 cursor-pointer"
+                    alt=""
+                  />
+                </div>
+                <span className="text-gray-400 flex mt-2">
+                  {post.likes.length} likes
+                </span>
+                <p className="mt-2">{post.caption}</p>
+                <span className="text-gray-400 flex mt-2">
+                  {post.comments.length} comments
+                </span>
+                <span className="text-gray-400 flex mt-2">
+                  Uploded {getTimeAgoString(post.createdAt)}
+                </span>
+              </div>
+            </>
+          )}
+        </div>
       </div>
-    </div>
     </>
   );
 }
