@@ -25,7 +25,7 @@ InstaKillo is a modern web application designed to streamline your social media 
 
 ## Technologies
 
-- **Frontend:** React, Chakraui
+- **Frontend:** React,TailWind
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB
 - **Containerization:** Docker
@@ -52,7 +52,8 @@ To get a local copy of this project up and running, follow these steps:
 
 4. **Set up environment variables:**
 
-   Replace "mongodb://localhost:27017/mongoDb" with process.env.MONGODB_URL in Server/index.js
+   Create .env file ./Server Folder and set process.env.MONGODB_URL = "mongodb://localhost:27017/mongoDb" 
+   Replace http://192.168.1.4:5000 with localhost:5173 in ./.env
 
 5. **Run the application using Docker Compose:**
 
