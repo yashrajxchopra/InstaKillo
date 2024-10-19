@@ -353,23 +353,21 @@ app.get(
   authenticateToken,
   async (req, res) => {
     let { count } = req.params;
-    if (count || count > 10) {
+    if(count > 10){
       count = 10;
     }
     const userId = req.user.userId;
 
     try {
-      const currentUser = await User.findById(userId)
-        .select("following")
-        .lean();
-
-      const users = await User.find({
-        _id: { $nin: currentUser.following },
-      })
-        .limit(Number(count))
-        .select("username pfp")
-        .lean();
-
+      const currentUser = await User.findById(userId).populate('following', '_id').select("following");
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      // Convert currentUser.following from strings to ObjectId
+      const followingIds = currentUser.following.map(f => new mongoose.Types.ObjectId(f));
+      const users = await User.aggregate([
+        { $match: { _id: { $nin: [...followingIds, userObjectId] } } },  
+        { $sample: { size: Number(count) } },
+        { $project: { username: 1, pfp: 1 } }
+      ]);
       return res.json(users);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -377,6 +375,84 @@ app.get(
     }
   }
 );
+//follow user
+app.post('/api/follow/:username', authenticateToken, async (req, res) =>{
+  const { username } = req.params;
+  const userId = req.user.userId;
+  try {
+    const currentUser = await User.findById(userId).select('following');
+
+    if (!currentUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const userToFollow = await User.findOne({ username }).select('_id followers');
+
+    if (!userToFollow) {
+      return res.status(404).json({ message: 'User to follow not found' });
+    }
+
+    if (currentUser.following.includes(userToFollow._id)) {
+      return res.status(400).json({ message: 'You are already following this user' });
+    }
+    
+    currentUser.following.push(userToFollow._id);
+
+    if (!userToFollow.followers.includes(currentUser._id)) {
+      userToFollow.followers.push(currentUser._id); 
+    }
+
+    await currentUser.save();
+    await userToFollow.save();
+
+    return res.status(200).json({ message: `You are now following ${username}` });
+  } catch (error) {
+    console.error('Error following user:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+
+});
+//unfollow user
+app.post('/api/unfollow/:username', authenticateToken, async (req, res) => {
+  const { username } = req.params;
+  const userId = req.user.userId;
+
+  try {
+    const currentUser = await User.findById(userId).select('following');
+    if (!currentUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const userToUnfollow = await User.findOne({ username }).select('_id followers');
+    if (!userToUnfollow) {
+      return res.status(404).json({ message: 'User to unfollow not found' });
+    }
+
+    // Check if the current user is following the user to unfollow
+    if (!currentUser.following.includes(userToUnfollow._id)) {
+      return res.status(400).json({ message: 'You are not following this user' });
+    }
+
+    // Remove userToUnfollow from currentUser's following list
+    currentUser.following = currentUser.following.filter(
+      id => id.toString() !== userToUnfollow._id.toString()
+    );
+
+    // Remove currentUser's ID from userToUnfollow's followers list
+    userToUnfollow.followers = userToUnfollow.followers.filter(
+      id => id.toString() !== currentUser._id.toString()
+    );
+
+    await currentUser.save();
+    await userToUnfollow.save();
+
+    return res.status(200).json({ message: `You have unfollowed ${username}` });
+  } catch (error) {
+    console.error('Error unfollowing user:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 app.get("/api/test", (req, res) => {
   res.send(`
     <!DOCTYPE html>

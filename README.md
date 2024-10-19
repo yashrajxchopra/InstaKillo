@@ -48,7 +48,7 @@ To get a local copy of this project up and running, follow these steps:
    ```
 3. **Set up MongoDB:**
 
-   Create MongoDB database with the name 'mongoDb' and make sure connection is on port 27017
+   Create MongoDB database with the name 'mongoDb' and make sure connection is on port 27017(You can use Altas.)
 
 4. **Set up environment variables:**
 

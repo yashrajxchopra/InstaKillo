@@ -45,7 +45,7 @@ export default function TestPost({ post, updatePostData }) {
   const fetchUserData = async (createdBy) => {
     try {
       const response = await axios.get(`${API_URL}/api/user/${createdBy}`);
-      console.log(response.data);
+      //console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -64,7 +64,7 @@ export default function TestPost({ post, updatePostData }) {
           },
         }
       );
-      console.log(user_Id);
+      //console.log(user_Id);
       if (likeArray.includes(user_Id.data._id)) {
         setLikeIcon(redheartIcon);
       } else {
@@ -101,11 +101,11 @@ export default function TestPost({ post, updatePostData }) {
       for (const comment of post.comments) {
         try {
           const commentUser = await fetchUserData(comment.createdBy); // Fetch user data for each comment
-          console.log(
-            commentUser,
-            "Fetched comment user data",
-            comment.createdBy
-          );
+          // console.log(
+          //   commentUser,
+          //   "Fetched comment user data",
+          //   comment.createdBy
+          // );
 
           // Push the fetched data into the new array
           newCommentData.push({
@@ -121,7 +121,7 @@ export default function TestPost({ post, updatePostData }) {
         }
       }
 
-      console.log(newCommentData);
+      //console.log(newCommentData);
       setCommentData(newCommentData);
     }
   };

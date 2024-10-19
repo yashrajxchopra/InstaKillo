@@ -243,9 +243,8 @@ body{
 .user-about-section{
     width: 40%;
     height: 100%;
+    margin-top: 4rem;
     position: relative;
-    position: fixed;
-    top: 60px;
     right: 0;
     padding: 20px;
     box-sizing: border-box; 
@@ -338,8 +337,19 @@ body{
     background: transparent;
   }
 
+  @layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;  
+        scrollbar-width: none;  
+  }
+}
+
+
   
-  @media screen and (max-width: 800px) {
+  @media screen and (max-width: 640px) {
     .user-about-section {
         display: none;
     }

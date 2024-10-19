@@ -22,14 +22,17 @@ import fetchUserData from "../../hooks/fetchUserData";
 import { useNavigate } from "react-router-dom";
 import CreatePost from "../CreatePost/CreatePost";
 import Navbar from "./Navbar";
+import getSuggestedUser from "../../hooks/getSuggestedUser";
+import followUser from "../../hooks/followUser";
+import unfollowUser from "../../hooks/unfollowUser";
 
-const feed = () => {
-  const [likeIcon, setLikeIcon] = useState(heartIcon);
+const Feed = () => {
   const [heartIconn, setHeartIcon] = useState(redheartIcon);
   const [activityVisible, setActivityVisible] = useState(false);
   const [posts, setPosts] = useState([]);
   const [userData, setUserData] = useState();
   const [createModal, setCreateModal] = useState(false);
+  const [suggestedUsers, setSuggestedUsers] = useState([]);
   const openModal = () => setCreateModal(true);
   const closeModal = () => setCreateModal(false);
   const API_URL = import.meta.env.VITE_API_URL;
@@ -65,7 +68,7 @@ const feed = () => {
         const token = localStorage.getItem("token");
         const response = await axios.get(`${API_URL}/api/posts`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Attach the token as a Bearer token in the Authorization header
+            Authorization: `Bearer ${token}`,
           },
         });
         try {
@@ -89,7 +92,7 @@ const feed = () => {
           });
         }
         setPosts(response.data);
-        console.log(response.data);
+        //console.log(response.data);
       } catch (error) {
         if (
           error.response &&
@@ -105,6 +108,15 @@ const feed = () => {
         }
       }
     };
+    const fetchSuggestedUsers = async (count) => {
+      try {
+        const users = await getSuggestedUser(count);
+        setSuggestedUsers(users);
+      } catch (err) {
+        toast.error("Failes to find suggested users");
+      }
+    };
+    fetchSuggestedUsers(3);
     fetchPost();
   }, []);
   //   if(posts.length === 0)
@@ -121,7 +133,7 @@ const feed = () => {
 
       <div className="flex flex-grow">
         <div className="w-full lg:w-2/3 p-4 overflow-y-auto h-full">
-          <div className="grid grid-cols-1 gap-2">
+          <div className="grid grid-cols-1 gap-0">
             {posts.map((post, index) => (
               <div key={index} className="w-full">
                 <TestPost post={post} updatePostData={updatePostData} />
@@ -156,16 +168,24 @@ const feed = () => {
           </div>
           <h1 className="suggestion-heading">suggestions</h1>
           <div className="suggestion-container">
-            <div className="user-card">
-              <img src={userImage} className="user-dp" alt="" />
-              <p className="username">@yc</p>
-              <button className="follow-btn">follow</button>
+            {suggestedUsers && (suggestedUsers.map((sUser, index) => (
+              <div className="user-card" key={'usercard' + index}>
+              <img src={sUser.pfp} className="user-dp" alt="" />
+              <p className="username">{sUser.username}</p>
+              <button className="follow-btn" 
+              onClick={ async ()=> {
+                try {
+                  await followUser(sUser.username); 
+                  setSuggestedUsers(prevUsers => 
+                    prevUsers.filter(user => user.username !== sUser.username)
+                  );
+                } catch (error) {
+                  console.error("Error following user:", error); 
+                }
+              }}
+              >follow</button>
             </div>
-            <div className="user-card">
-              <img src={userImage} className="user-dp" alt="" />
-              <p className="username">@yc</p>
-              <button className="follow-btn">follow</button>
-            </div>
+            )))}
           </div>
         </div>
       </div>
@@ -173,4 +193,4 @@ const feed = () => {
   );
 };
 
-export default feed;
+export default Feed;
