@@ -45,6 +45,10 @@ const Feed = () => {
     setHeartIcon(heartIconn === heartIcon ? heartIconF : heartIcon);
   };
 
+  const handleClick = (username) => {
+    navigate(`/${username}`);
+  }
+
   const handleLogout = () => {
     if (logoutUser()) {
       toast.success("Logout Successful");
@@ -125,15 +129,15 @@ const Feed = () => {
   //   }
 
   return (
-    <div className="flex flex-col h-screen w-full">
+    <div className="flex flex-col h-screen w-full bg-black">
       <div className="navbar">
         <Navbar openModal={openModal} />
       </div>
       {createModal && <CreatePost closeModal={closeModal} />}
 
-      <div className="flex flex-grow">
+      <div className="flex flex-grow bg-black">
         <div className="w-full lg:w-2/3 p-4 overflow-y-auto h-full">
-          <div className="grid grid-cols-1 gap-0">
+          <div className="grid grid-cols-1">
             {posts.map((post, index) => (
               <div key={index} className="w-full">
                 <TestPost post={post} updatePostData={updatePostData} />
@@ -143,7 +147,7 @@ const Feed = () => {
         </div>
 
         {/* User about section */}
-        <div className=" user-about-section">
+        <div className=" user-about-section text-gray-300">
           <div className="user-info">
             {userData ? (
               <img src={userData.pfp} className="user-dp" alt="" />
@@ -169,9 +173,9 @@ const Feed = () => {
           <h1 className="suggestion-heading">suggestions</h1>
           <div className="suggestion-container">
             {suggestedUsers && (suggestedUsers.map((sUser, index) => (
-              <div className="user-card" key={'usercard' + index}>
-              <img src={sUser.pfp} className="user-dp" alt="" />
-              <p className="username">{sUser.username}</p>
+              <div className="user-card bg-darkgray" key={'usercard' + index}>
+              <img src={sUser.pfp} className="user-dp cursor-pointer" onClick={() => handleClick(sUser.username)} alt="" />
+              <p className="username cursor-pointer" onClick={() => handleClick(sUser.username)}>{sUser.username}</p>
               <button className="follow-btn" 
               onClick={ async ()=> {
                 try {

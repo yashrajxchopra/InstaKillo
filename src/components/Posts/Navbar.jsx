@@ -81,7 +81,7 @@ export default function Navbar({ openModal }) {
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="block w-64 h-8 p-3  border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="block text-gray-300 bg-gray-900 w-64 h-8 p-3  border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button className="flex items-center bg-gray-300 rounded-full p-2 ml-3">
                   <img className="h-4" src={searchIcon} alt="Search" />
@@ -155,7 +155,7 @@ export default function Navbar({ openModal }) {
           <input
             type="text"
             placeholder="Search..."
-            className="block m-4 h-8 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="block text-gray-300 bg-gray-900 m-4 h-8 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <button className="flex items-center bg-gray-300 rounded-full p-2">
             <img className="h-5" src={searchIcon} alt="Search" />

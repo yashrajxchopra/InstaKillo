@@ -39,7 +39,7 @@ export default function TestPost({ post, updatePostData }) {
   const API_URL = import.meta.env.VITE_API_URL;
 
   const handleClick = () => {
-    navigate(`/p/`);
+    navigate(`/${userData.username}`);
   };
 
   const fetchUserData = async (createdBy) => {
@@ -235,25 +235,26 @@ export default function TestPost({ post, updatePostData }) {
 
   return (
     <>
-      <div className="flex justify-center items-center min-h-screen m-0">
-        <div className="w-full sm:w-11/12 md:w-9/12 lg:w-2/3 max-w-2xl h-auto rounded-md border border-gray-400 bg-white">
+      <div className="flex justify-center items-center min-h-screen m-0 ">
+        <div className="text-gray-300  bg-darkgray w-full sm:w-11/12 md:w-9/12 lg:w-2/3 max-w-2xl h-auto rounded-md border border-gray-400">
           {!isOpen ? (
             <div className="flex justify-center items-center p-2 gap-2.5">
               {userData ? ( 
                 <>
                   <img
                     src={userData.pfp}
-                    className="w-7 h-7 rounded-full"
+                    className="w-7 h-7 rounded-full cursor-pointer"
                     alt=""
+                    onClick={handleClick}
                   />
-                  <p className="">{userData.username}</p>
+                  <p className="cursor-pointer" onClick={handleClick} >{userData.username}</p>
                 </>
               ) : (
                 <p>Loading...</p>
               )}
             </div>
           ) : (
-            <div className="flex flex-col scrollbar-hide h-[36.3rem]">
+            <div className="flex flex-col scrollbar-hide h-[34.3rem]">
               <div className="flex items-center justify-between w-full h-8">
                 <h2 className="flex-grow text-center">Comments</h2>
                 <img
@@ -267,7 +268,7 @@ export default function TestPost({ post, updatePostData }) {
               <div className="overflow-auto max-h-[550px] h-[550px] flex-grow border-t border-b border-gray-500 px-4 py-2 w-full box-border mb-2 sm:px-5 sm:py-2.5 md:max-h-[600px] lg:max-h-[650px] scrollbar-hide">
                 {post.comments.length === 0 && (
                   <div className="flex justify-center items-center h-full">
-                    <span>No Comments</span>
+                    <span className="text-white">No Comments</span>
                   </div>
                 )}
 
@@ -296,7 +297,7 @@ export default function TestPost({ post, updatePostData }) {
 
                     <span>
                       {commentData[index] ? (
-                        <p style={userStyle} onClick={handleClick}>
+                        <p className="text-gray-300" onClick={handleClick}>
                           {commentData[index].user}
                         </p>
                       ) : (

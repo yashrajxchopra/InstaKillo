@@ -453,6 +453,25 @@ app.post('/api/unfollow/:username', authenticateToken, async (req, res) => {
   }
 });
 
+//fecth user profile
+app.get("/api/profile/:username", async (req, res) => {
+  const username = req.params.username;
+
+  try {
+    const user = await User.findOne({username});
+
+    if (user) {
+      const { username, bio, pfp, posts } = user;
+      res.json({ username, bio, pfp, posts });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+//test
 app.get("/api/test", (req, res) => {
   res.send(`
     <!DOCTYPE html>

@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import React from 'react';
 import TestPost from "./components/Posts/TestPost"
+import Profile from "./components/Profile/Profile"
 
 
 
@@ -21,7 +22,8 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/post" element={<TestPost/>} />
-         <Route path="/" element={<Feed/>} />
+        <Route path="/" element={<Feed/>} />
+        <Route path="/:username" element={<Profile/>} />
       </Routes>
     </Router>
     <ToastContainer position="bottom-center"/>

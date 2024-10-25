@@ -48,7 +48,7 @@ export default function CreatePost({ closeModal }) {
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-black w-[500px] h-[350px] p-5 rounded-lg shadow-md relative">
+        <div className="bg-black w-3/4 max-w-[500px] h-[350px] p-5 rounded-lg shadow-md relative">
           <h2 className="text-xl text-gray-300 font-semibold mb-4">
             Create a Post
           </h2>
@@ -87,7 +87,7 @@ export default function CreatePost({ closeModal }) {
                 required
                 maxLength={150}
                 placeholder="150 word limit"
-                className="mt-2 block w-full border border-gray-300 rounded-md p-2 h-20 resize-none"
+                className="mt-2 text-white bg-gray-900 block w-full border border-gray-300 rounded-md p-2 h-20 resize-none"
               />
             </div>
             <div className="mb-4">
@@ -103,7 +103,7 @@ export default function CreatePost({ closeModal }) {
                 onChange={handleImageChange}
                 required
                 accept=".jpg,.jpeg,.png"
-                className="mt-2 block w-full border border-gray-300 rounded-md p-2"
+                className="mt-2 text-white block w-full border border-gray-300 rounded-md p-2"
               />
             </div>
             {errorMessage && (
