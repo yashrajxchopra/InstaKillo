@@ -461,14 +461,40 @@ app.get("/api/profile/:username", async (req, res) => {
     const user = await User.findOne({username});
 
     if (user) {
-      const { username, bio, pfp, posts } = user;
-      res.json({ username, bio, pfp, posts });
+      const { username, bio, pfp, posts, followers, following } = user;
+      res.json({ username, bio, pfp, posts, followers, following });
     } else {
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
+});
+//checkIfFollowing
+app.get("/api/checkIfFollowing/:username", authenticateToken, async (req, res) => {
+const userId = req.user.userId;
+const { username } = req.params;
+try {
+  const currentUser = await User.findById(userId).select('following');
+  if (!currentUser) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  const userToCheck = await User.findOne({ username }).select('_id followers');
+  if (!userToCheck) {
+    return res.status(404).json({ message: 'User to unfollow not found' });
+  }
+
+  if (!currentUser.following.includes(userToCheck._id)) {
+    return res.status(400).json({ message: 'False' });
+  }
+
+  return res.status(200).json({ message: `True` });
+} catch (error) {
+  console.error('Error  in Checking:', error);
+  return res.status(500).json({ message: 'Internal Server Error' });
+}
+
 });
 
 //test

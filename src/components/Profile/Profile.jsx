@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import fetchUserProfile from '../../hooks/fetchUserProfile';
+import fetchUserData from '../../hooks/fetchUserData'; // Assume this hook exists
 import defaultpfp from '../../../Server/uploads/defaultpfp.png';
 import fetchPostData from '../../hooks/fetchPostData';
 import TestPost from '../Posts/TestPost';
 import Navbar from '../Posts/Navbar';
 import CreatePost from '../CreatePost/CreatePost';
+import { toast } from 'react-toastify';
+import unfollowUser from '../../hooks/unfollowUser';
+import followUser from '../../hooks/followUser';
+import checkIfFollowing from '../../hooks/checkIfFollowing';
 
 function Profile() {
   const [userData, setUserData] = useState({
@@ -13,11 +18,18 @@ function Profile() {
     bio: '',
     pfp: '',
     posts: [],
+    followers: [],
+    following: []
   });
   const { username } = useParams();
   const [userPosts, setUserPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [createModal, setCreateModal] = useState(false);
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingModal, setShowFollowingModal] = useState(false);
+  const [followersDetails, setFollowersDetails] = useState([]);
+  const [followingDetails, setFollowingDetails] = useState([]);
+
   const openModal = () => setCreateModal(true);
   const closeModal = () => setCreateModal(false);
 
@@ -29,13 +41,9 @@ function Profile() {
     );
   };
 
-  const handlePostClick = (post) => {
-    setSelectedPost(post); // Set the selected post
-  };
+  const handlePostClick = (post) => setSelectedPost(post);
 
-  const handleCloseModal = () => {
-    setSelectedPost(null); // Close the modal
-  };
+  const handleCloseModal = () => setSelectedPost(null);
 
   const fetchProfile = async () => {
     const tempData = await fetchUserProfile(username);
@@ -48,8 +56,6 @@ function Profile() {
         const postsData = await Promise.all(
           userData.posts.map((postId) => fetchPostData(postId))
         );
-
-        // Filter out any null or undefined posts
         const validPosts = postsData.filter(post => post);
         setUserPosts(validPosts);
       } catch (error) {
@@ -58,19 +64,35 @@ function Profile() {
     }
   };
 
-  useEffect(() => {
-    fetchProfile();
-  }, [username]); // Trigger fetchProfile when the username changes
+  const fetchFollowersDetails = async () => {
+    const followersData = await Promise.all(
+      userData.followers.map((id) => fetchUserData(id))
+    );
+    setFollowersDetails(followersData);
+    setShowFollowersModal(true);
+  };
+
+  const fetchFollowingDetails = async () => {
+    const followingData = await Promise.all(
+      userData.following.map((id) => fetchUserData(id))
+    );
+    setFollowingDetails(followingData);
+    setShowFollowingModal(true);
+  };
 
   useEffect(() => {
-    if (userData.username) { // Fetch posts only after userData is set
+    fetchProfile();
+  }, [username]);
+
+  useEffect(() => {
+    if (userData.username) {
       fetchPosts();
     }
   }, [userData]);
 
   return (
     <div className="min-h-screen bg-black text-white">
-        <div className="navbar">
+      <div className="navbar">
         <Navbar openModal={openModal} />
       </div>
       {createModal && <CreatePost closeModal={closeModal} />}
@@ -86,6 +108,14 @@ function Profile() {
           <div>
             <h2 className="text-3xl font-bold">{userData.username}</h2>
             <p className="text-gray-400 mt-2">{userData.bio}</p>
+            <div className="flex mt-4 space-x-4">
+              <button onClick={fetchFollowersDetails} className="text-blue-500">
+                Followers: {userData.followers.length}
+              </button>
+              <button onClick={fetchFollowingDetails} className="text-blue-500">
+                Following: {userData.following.length}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -104,38 +134,105 @@ function Profile() {
         {userPosts.length === 0 && (<p className='text-center text-xl'>No Posts Yet</p>)}
       </div>
 
-      {selectedPost && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm z-50">
-    <div className="p-4 rounded-lg shadow-lg max-w-3xl w-full mx-4">
-      <button
-        onClick={handleCloseModal}
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
-      <div className="w-full">
-        <TestPost post={selectedPost} updatePostData={updatePostData} />
-      </div>
-    </div>
-  </div>
-)}
+      {showFollowersModal && (
+        <Modal title="Followers" onClose={() => setShowFollowersModal(false)}>
+          {followersDetails.map((user) => (
+            <UserListItem key={user._id} user={user} />
+          ))}
+        </Modal>
+      )}
 
+      {showFollowingModal && (
+        <Modal title="Following" onClose={() => setShowFollowingModal(false)}>
+          {followingDetails.map((user) => (
+            <UserListItem key={user._id} user={user} />
+          ))}
+        </Modal>
+      )}
+
+      {selectedPost && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm z-50">
+          <div className="p-4 rounded-lg shadow-lg max-w-3xl w-full mx-4">
+            <button onClick={handleCloseModal} className="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="w-full">
+              <TestPost post={selectedPost} updatePostData={updatePostData} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
+}
+
+function Modal({ title, onClose, children }) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white text-black rounded-lg p-4 w-full max-w-lg">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">{title}</h2>
+          <button onClick={onClose}>Close</button>
+        </div>
+        <div>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function UserListItem({ user }) {
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(() => {
+    const fetchFollowStatus = async () => {
+      try {
+        const isUserFollowing = await checkIfFollowing(user.username);
+        setIsFollowing(isUserFollowing);
+      } catch (error) {
+        console.error("Error checking follow status:", error);
+      }
+    };
+    fetchFollowStatus();
+  }, [user.username]);
+
+  const handleFollowToggle = async () => {
+    try {
+      if (isFollowing) {
+        await unfollowUser(user.username);
+        toast.success("Unfollowed");
+      } else {
+        await followUser(user.username);
+        toast.success("Followed");
+      }
+      setIsFollowing(!isFollowing);
+    } catch (error) {
+      console.error(`Error ${isFollowing ? "unfollowing" : "following"} user:`, error);
+    }
+  };
+
+  return (
+    <div className="px-4 sm:px-6 md:px-8">
+      <div className="flex items-center space-x-4 py-2 sm:space-x-6 sm:py-3">
+        <img 
+          src={user.pfp || defaultpfp} 
+          alt={user.username} 
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" 
+        />
+        <div className="flex-1">
+          <span className="block w-24 sm:w-32 truncate">{user.username}</span>
+        </div>
+        <button
+          onClick={handleFollowToggle}
+          className={`px-3 py-1 text-sm rounded ${isFollowing ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'} sm:px-4`}
+        >
+          {isFollowing ? 'Unfollow' : 'Follow'}
+        </button>
+      </div>
+    </div>
+  );
+
 }
 
 export default Profile;
