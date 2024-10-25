@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import fetchUserProfile from '../../hooks/fetchUserProfile';
 import fetchUserData from '../../hooks/fetchUserData'; // Assume this hook exists
 import defaultpfp from '../../../Server/uploads/defaultpfp.png';
@@ -29,7 +29,6 @@ function Profile() {
   const [showFollowingModal, setShowFollowingModal] = useState(false);
   const [followersDetails, setFollowersDetails] = useState([]);
   const [followingDetails, setFollowingDetails] = useState([]);
-
   const openModal = () => setCreateModal(true);
   const closeModal = () => setCreateModal(false);
 
@@ -137,16 +136,18 @@ function Profile() {
       {showFollowersModal && (
         <Modal title="Followers" onClose={() => setShowFollowersModal(false)}>
           {followersDetails.map((user) => (
-            <UserListItem key={user._id} user={user} />
+            <UserListItem key={user._id} user={user} closeModal={setShowFollowersModal} />
           ))}
+          {followersDetails.length === 0 && <p className='text-center text-gray-300'>No Followers</p>}
         </Modal>
       )}
 
       {showFollowingModal && (
         <Modal title="Following" onClose={() => setShowFollowingModal(false)}>
           {followingDetails.map((user) => (
-            <UserListItem key={user._id} user={user} />
+            <UserListItem key={user._id} user={user} closeModal={setShowFollowingModal} />
           ))}
+          {followingDetails.length === 0 && <p className='text-center text-gray-300'>No Followings</p>}
         </Modal>
       )}
 
@@ -170,11 +171,11 @@ function Profile() {
 
 function Modal({ title, onClose, children }) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white text-black rounded-lg p-4 w-full max-w-lg">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 mr-5 ml-5">
+      <div className="bg-darkgray text-black rounded-lg p-4 w-full max-w-lg">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">{title}</h2>
-          <button onClick={onClose}>Close</button>
+          <h2 className="text-xl text-white font-semibold">{title}</h2>
+          <button onClick={onClose} className='text-white'>Close</button>
         </div>
         <div>{children}</div>
       </div>
@@ -182,8 +183,14 @@ function Modal({ title, onClose, children }) {
   );
 }
 
-function UserListItem({ user }) {
+function UserListItem({ user, closeModal }) {
   const [isFollowing, setIsFollowing] = useState(false);
+ const navigate = useNavigate();
+ const handleUserClick =  () => {
+  closeModal(false); 
+  navigate(`/${user.username}`);
+};
+
 
   useEffect(() => {
     const fetchFollowStatus = async () => {
@@ -218,10 +225,11 @@ function UserListItem({ user }) {
         <img 
           src={user.pfp || defaultpfp} 
           alt={user.username} 
-          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" 
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full cursor-pointer" 
+          onClick={ handleUserClick}
         />
         <div className="flex-1">
-          <span className="block w-24 sm:w-32 truncate">{user.username}</span>
+          <span className="block w-24 text-gray-300 sm:w-32 truncate cursor-pointer" onClick={handleUserClick}>{user.username}</span>
         </div>
         <button
           onClick={handleFollowToggle}

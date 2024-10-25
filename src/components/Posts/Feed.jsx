@@ -131,7 +131,7 @@ const Feed = () => {
   return (
     <div className="flex flex-col h-screen w-full bg-black">
       <div className="navbar">
-        <Navbar openModal={openModal} />
+        <Navbar openModal={openModal} username={userData ? userData.username:'#'}/>
       </div>
       {createModal && <CreatePost closeModal={closeModal} />}
 

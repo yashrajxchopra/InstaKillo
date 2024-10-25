@@ -454,7 +454,7 @@ app.post('/api/unfollow/:username', authenticateToken, async (req, res) => {
 });
 
 //fecth user profile
-app.get("/api/profile/:username", async (req, res) => {
+app.get("/api/profile/:username",authenticateToken, async (req, res) => {
   const username = req.params.username;
 
   try {
@@ -486,7 +486,7 @@ try {
   }
 
   if (!currentUser.following.includes(userToCheck._id)) {
-    return res.status(400).json({ message: 'False' });
+    return res.status(200).json({ message: 'False' });
   }
 
   return res.status(200).json({ message: `True` });

@@ -21,7 +21,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import user from "./img/icon/user.png";
 
-export default function Navbar({ openModal }) {
+export default function Navbar({ openModal, username }) {
   const [activityVisible, setActivityVisible] = useState(false);
   const navigate = useNavigate();
 
@@ -129,7 +129,7 @@ export default function Navbar({ openModal }) {
               >
                 <MenuItem>
                   <a
-                    href="#"
+                    href={`${username}`}
                     className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
                   >
                     My Profile
