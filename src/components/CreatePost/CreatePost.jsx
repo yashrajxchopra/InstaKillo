@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export default function CreatePost({ closeModal }) {
+export default function CreatePost({ closeModal, addNewCreatedPost }) {
   const [userId, setUserId] = useState("");
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const API_URL = import.meta.env.VITE_API_URL;
+  const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -15,7 +16,7 @@ export default function CreatePost({ closeModal }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("caption", caption);
@@ -31,6 +32,7 @@ export default function CreatePost({ closeModal }) {
 
       setCaption("");
       setUserId("");
+      addNewCreatedPost(response.data.post);
       setImage(null);
       toast.success("Post added");
       setErrorMessage("");
@@ -42,6 +44,9 @@ export default function CreatePost({ closeModal }) {
       } else {
         setErrorMessage("Error creating post. Please try again.");
       }
+    }
+    finally {
+      setLoading(false); 
     }
   };
 
@@ -112,9 +117,10 @@ export default function CreatePost({ closeModal }) {
             <button
               type="button"
               onClick={handleSubmit}
+              disabled={loading}
               className="w-full bg-indigo-600 text-white font-semibold rounded-md px-3 py-1.5 hover:bg-indigo-500"
             >
-              Post
+              {loading ? "Posting..." : "Post"}
             </button>
           </form>
         </div>

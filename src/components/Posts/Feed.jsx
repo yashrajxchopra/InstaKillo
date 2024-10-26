@@ -66,6 +66,11 @@ const Feed = () => {
     );
   };
 
+
+  const addNewCreatedPost = (newPost) => {
+    setPosts([newPost, ...items]);
+  };
+
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -133,7 +138,7 @@ const Feed = () => {
       <div className="navbar">
         <Navbar openModal={openModal} username={userData ? userData.username:'#'}/>
       </div>
-      {createModal && <CreatePost closeModal={closeModal} />}
+      {createModal && <CreatePost closeModal={closeModal} addNewCreatedPost={addNewCreatedPost}/>}
 
       <div className="flex flex-grow bg-black mt-10">
         <div className="w-full lg:w-2/3 p-4 overflow-y-auto h-full">
