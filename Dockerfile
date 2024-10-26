@@ -14,20 +14,26 @@ WORKDIR /app
 
 # Copy frontend package.json and install dependencies
 COPY package.json  ./frontend/
-RUN npm install --prefix ./frontend
+RUN cd ./frontend/
+RUN npm install
 
 # Copy backend package.json and install dependencies
+RUN cd ..
 COPY ./Server/package.json ./backend/
-RUN npm install --prefix ./backend
+RUN cd ./backend
+RUN npm install 
 
 # Copy the rest of the application code
+RUN cd ..
 COPY . .
 
 # Install concurrently to run both frontend and backend
-RUN npm install --prefix ./frontend concurrently
+RUN cd ./frontend
+RUN npm install concurrently
 
 # Expose the ports for both services
+RUN cd ..
 EXPOSE 5173 5000
 
 # Command to run both applications using concurrently
-CMD ["npx", "concurrently", "npm run dev --prefix ./frontend", "node --prefix ./backend index.js"]
+CMD ["npx", "concurrently", "npm run dev --prefix ./frontend", "node ./backend index.js"]
