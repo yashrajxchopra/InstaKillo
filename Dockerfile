@@ -30,4 +30,4 @@ RUN npm install --prefix ./frontend concurrently
 EXPOSE 5173 5000
 
 # Command to run both applications using concurrently
-CMD ["npx", "concurrently", "npm run dev --prefix ./frontend", "npx nodemon --prefix ./backend index.js"]
+CMD ["npx", "concurrently", "npm run dev --prefix ./frontend", "node --prefix ./backend index.js"]
