@@ -209,7 +209,7 @@ app.post(
       });
 
       await newPost.save();
-      console.log(req.user._id + "  " + newPost._id);
+      //console.log(req.user._id + "  " + newPost._id);
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });

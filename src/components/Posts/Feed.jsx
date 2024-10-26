@@ -68,7 +68,7 @@ const Feed = () => {
 
 
   const addNewCreatedPost = (newPost) => {
-    setPosts([newPost, ...items]);
+    setPosts([newPost, ...posts]);
   };
 
   useEffect(() => {
