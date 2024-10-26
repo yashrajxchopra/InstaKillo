@@ -142,7 +142,7 @@ export default function TestPost({ post, updatePostData }) {
       const response = await axios.post(
         `${API_URL}/api/posts/${post._id}/like`,
         {},
-        {
+        {   
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -235,7 +235,7 @@ export default function TestPost({ post, updatePostData }) {
 
   return (
     <>
-      <div className="flex justify-center items-center min-h-screen m-0 ">
+      <div className="flex justify-center items-center mt-2 mb-2 ">
         <div className="text-gray-300  bg-darkgray w-full sm:w-11/12 md:w-9/12 lg:w-2/3 max-w-2xl h-auto rounded-md border border-gray-400">
           {!isOpen ? (
             <div className="flex justify-center items-center p-2 gap-2.5">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import searchIcon from "./img/icon/search.png";
 import homeIcon from "./img/icon/home.png";
 import logout from "./img/icon/logout.png";
@@ -24,6 +24,7 @@ import user from "./img/icon/user.png";
 export default function Navbar({ openModal, username }) {
   const [activityVisible, setActivityVisible] = useState(false);
   const navigate = useNavigate();
+  const inputRef = useRef(null);
 
   const navigation = [
     { name: "Feed", href: "#", current: true },
@@ -48,6 +49,20 @@ export default function Navbar({ openModal, username }) {
       toast.error("There was a problem");
     }
   };
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+        event.preventDefault(); 
+        inputRef.current?.focus(); 
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   return (
     <Disclosure as="nav" className="bg-black">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -80,7 +95,8 @@ export default function Navbar({ openModal, username }) {
               <div className="flex justify-center">
                 <input
                   type="text"
-                  placeholder="Search..."
+                  placeholder="Search... [CTRL+K]"
+                  ref={inputRef}
                   className="block text-gray-300 bg-gray-900 w-64 h-8 p-3  border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button className="flex items-center bg-gray-300 rounded-full p-2 ml-3">
@@ -155,6 +171,7 @@ export default function Navbar({ openModal, username }) {
           <input
             type="text"
             placeholder="Search..."
+            ref={inputRef}
             className="block text-gray-300 bg-gray-900 m-4 h-8 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <button className="flex items-center bg-gray-300 rounded-full p-2">

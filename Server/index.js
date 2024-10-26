@@ -289,7 +289,7 @@ app.post("/api/posts/:postId/comment", async (req, res) => {
 app.get("/api/posts", authenticateToken, async (req, res) => {
   //console.log(req.user)
   try {
-    const posts = await Post.find().exec();
+    const posts = await Post.find().sort({ createdAt: -1 }).exec();
     res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({ error: error.message });

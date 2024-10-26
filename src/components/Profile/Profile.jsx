@@ -29,15 +29,17 @@ function Profile() {
   const [showFollowingModal, setShowFollowingModal] = useState(false);
   const [followersDetails, setFollowersDetails] = useState([]);
   const [followingDetails, setFollowingDetails] = useState([]);
+  const [errorP, setErrorP] = useState('');
   const openModal = () => setCreateModal(true);
   const closeModal = () => setCreateModal(false);
 
-  const updatePostData = (postId, updatedPost) => {
+  const updatePostDataPofile = (postId, updatedPost) => {
     setUserPosts((prevPosts) =>
       prevPosts.map((post) =>
         post._id === postId ? { ...post, ...updatedPost } : post
       )
     );
+    setSelectedPost(updatedPost);
   };
 
   const handlePostClick = (post) => setSelectedPost(post);
@@ -45,8 +47,17 @@ function Profile() {
   const handleCloseModal = () => setSelectedPost(null);
 
   const fetchProfile = async () => {
-    const tempData = await fetchUserProfile(username);
-    setUserData(tempData);
+    try{
+      const tempData = await fetchUserProfile(username);
+      setUserData(tempData);
+    }
+    catch (error) {
+      if (error.message === "User not found") {
+        setErrorP(error.message);
+      } else {
+        setErrorP("Something Went Wrong");
+      }
+    }
   };
 
   const fetchPosts = async () => {
@@ -95,11 +106,12 @@ function Profile() {
         <Navbar openModal={openModal} />
       </div>
       {createModal && <CreatePost closeModal={closeModal} />}
-      <div className="max-w-4xl mx-auto p-6 mt-10">
+      
+      {errorP? (<div className='flex flex-col h-full p-6 mt-10 bg-black justify-center items-center'><p className='mt-20 text-center bg-black text-xl sm:text-5xl'>{errorP}</p></div>):(<div className="max-w-4xl mx-auto p-6 mt-10">
         <div className="flex items-center space-x-8 mb-8">
           <div className="w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-gray-700">
             <img
-              src={userData.pfp || defaultpfp}
+              src={userData? userData.pfp : defaultpfp}
               alt={`${userData.username}'s profile picture`}
               className="object-cover w-full h-full"
             />
@@ -131,7 +143,7 @@ function Profile() {
           ))}
         </div>
         {userPosts.length === 0 && (<p className='text-center text-xl'>No Posts Yet</p>)}
-      </div>
+      </div>)}
 
       {showFollowersModal && (
         <Modal title="Followers" onClose={() => setShowFollowersModal(false)}>
@@ -160,7 +172,7 @@ function Profile() {
               </svg>
             </button>
             <div className="w-full">
-              <TestPost post={selectedPost} updatePostData={updatePostData} />
+              <TestPost post={selectedPost} updatePostData={updatePostDataPofile} />
             </div>
           </div>
         </div>
@@ -208,10 +220,10 @@ function UserListItem({ user, closeModal }) {
     try {
       if (isFollowing) {
         await unfollowUser(user.username);
-        toast.success("Unfollowed");
+        toast.success(`Unfollowed ${user.username}`);
       } else {
         await followUser(user.username);
-        toast.success("Followed");
+        toast.success(`Following ${user.username}`);
       }
       setIsFollowing(!isFollowing);
     } catch (error) {

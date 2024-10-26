@@ -135,7 +135,7 @@ const Feed = () => {
       </div>
       {createModal && <CreatePost closeModal={closeModal} />}
 
-      <div className="flex flex-grow bg-black">
+      <div className="flex flex-grow bg-black mt-10">
         <div className="w-full lg:w-2/3 p-4 overflow-y-auto h-full">
           <div className="grid grid-cols-1">
             {posts.map((post, index) => (
@@ -183,7 +183,9 @@ const Feed = () => {
                   setSuggestedUsers(prevUsers => 
                     prevUsers.filter(user => user.username !== sUser.username)
                   );
+                  toast.success(`Following ${sUser.username}`);
                 } catch (error) {
+                  toast.error("Failed");
                   console.error("Error following user:", error); 
                 }
               }}
