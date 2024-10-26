@@ -1,10 +1,10 @@
 
-# InstaKillo (Check Application on https://instakillo-production.up.railway.app)
-
+# InstaKillo 
+(Check Application on https://instakillo-production.up.railway.app)
 InstaKillo is a modern web application designed to streamline your social media interactions. Built with a Node.js backend and a React frontend, it offers seamless user authentication, media uploads, and a responsive user interface. The application leverages MongoDB for data storage and supports Docker for easy deployment.
 
 ## Table of Contents
-
+- [Samples](#samples)
 - [Features](#features)
 - [Technologies](#technologies)
 - [Getting Started](#getting-started)
@@ -14,6 +14,12 @@ InstaKillo is a modern web application designed to streamline your social media 
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
+  
+## Samples
+<img src="https://github.com/yashrajxchopra/InstaKillo/blob/main/samples/1.png?raw=true" alt="Image 1" width="450" height="200" />
+<img src="https://github.com/yashrajxchopra/InstaKillo/blob/main/samples/2.png?raw=true" alt="Image 2" width="450" height="200" />
+<img src="https://github.com/yashrajxchopra/InstaKillo/blob/main/samples/4.png?raw=true" alt="Image 4" width="450" height="200" />
+<img src="https://github.com/yashrajxchopra/InstaKillo/blob/main/samples/3.png?raw=true" alt="Image 3" width="200" height="400" />
 
 ## Features
 
