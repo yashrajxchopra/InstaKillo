@@ -9,24 +9,25 @@ RUN apk add --no-cache \
     g++ \
     make
 
-# Create directories for both frontend and backend
-WORKDIR /app/frontend
-COPY package.json package-lock.json ./
-RUN npm install
+# Set the working directory for the entire application
+WORKDIR /app
+
+# Copy frontend package.json and install dependencies
+COPY package.json  ./frontend/
+RUN npm install --prefix ./frontend
+
+# Copy backend package.json and install dependencies
+COPY ./Server/package.json ./backend/
+RUN npm install --prefix ./backend
+
+# Copy the rest of the application code
 COPY . .
 
-# Build frontend
-EXPOSE 5173
-CMD ["npm", "run", "dev"]
+# Install concurrently to run both frontend and backend
+RUN npm install --prefix ./frontend concurrently
 
-# Set up backend
-WORKDIR /app/backend
-COPY ./Server/package.json ./
-RUN npm install
-COPY ./Server ./
+# Expose the ports for both services
+EXPOSE 5173 5000
 
-# Expose the backend port
-EXPOSE 5000
-
-# Command to run the backend application
-CMD ["npx", "nodemon", "index.js"]
+# Command to run both applications using concurrently
+CMD ["npx", "concurrently", "npm run dev --prefix ./frontend", "npx nodemon --prefix ./backend index.js"]
