@@ -1,39 +1,32 @@
 # Use an official Node.js runtime as a parent image
-FROM node:18-alpine AS build
-
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy package.json and package-lock.json for both frontend and backend
-COPY package.json ./
-COPY Server/package.json ./Server/
-
-# Install dependencies for both frontend and backend
-RUN npm install
-RUN npm install --prefix ./Server
-
-# Copy the rest of your application code
-COPY . .
-
-# Build the frontend (assuming you have a build script defined in package.json)
-RUN npm run build
-
-# Prepare for production
 FROM node:18-alpine
 
-# Set the working directory in the production container
-WORKDIR /app
+# Install build dependencies for native modules
+RUN apk add --no-cache \
+    bash \
+    git \
+    gcc \
+    g++ \
+    make
 
-# Copy built frontend files from the previous stage
-COPY --from=build /app/build ./build
-COPY --from=build /app/Server ./Server
+# Create directories for both frontend and backend
+WORKDIR /app/frontend
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
 
-# Install only the production dependencies for the backend
-COPY --from=build /app/package.json /app/package-lock.json ./
-RUN npm install --only=production
+# Build frontend
+EXPOSE 5173
+CMD ["npm", "run", "dev"]
 
-# Expose ports for backend and frontend
-EXPOSE 5000 5173
+# Set up backend
+WORKDIR /app/backend
+COPY ./Server/package.json ./
+RUN npm install
+COPY ./Server ./
 
-# Start both backend and frontend
-CMD ["sh", "-c", "npm start --prefix ./Server & npx serve build -l 5173"]
+# Expose the backend port
+EXPOSE 5000
+
+# Command to run the backend application
+CMD ["npx", "nodemon", "index.js"]
