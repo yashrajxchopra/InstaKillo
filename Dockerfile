@@ -9,25 +9,20 @@ RUN apk add --no-cache \
     g++ \
     make
 
-# Set the working directory for the entire application
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy frontend package.json and install dependencies
-COPY package.json ./frontend/
-RUN npm install --prefix ./frontend
+# Copy package.json and package-lock.json
+COPY package.json ./
 
-# Copy backend package.json and install dependencies
-COPY ./Server/package.json ./backend/
-RUN npm install --prefix ./backend
+# Install all dependencies
+RUN npm install
 
-# Copy the rest of the application code
+# Copy the rest of your application code
 COPY . .
 
-# Install concurrently to run both frontend and backend
-RUN npm install --prefix ./frontend concurrently
+# Expose the frontend port
+EXPOSE 5173
 
-# Expose the ports for both services
-EXPOSE 5173 5000
-
-# Command to run both applications using concurrently
-CMD ["npx", "concurrently", "npm run dev --prefix ./frontend", "node ./backend/index.js"]
+# Command to run your application using npm run dev
+CMD ["npm", "run", "dev"]
