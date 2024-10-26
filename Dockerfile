@@ -13,27 +13,21 @@ RUN apk add --no-cache \
 WORKDIR /app
 
 # Copy frontend package.json and install dependencies
-COPY package.json  ./frontend/
-RUN cd ./frontend/
-RUN npm install
+COPY package.json ./frontend/
+RUN npm install --prefix ./frontend
 
 # Copy backend package.json and install dependencies
-RUN cd ..
 COPY ./Server/package.json ./backend/
-RUN cd ./backend
-RUN npm install 
+RUN npm install --prefix ./backend
 
 # Copy the rest of the application code
-RUN cd ..
 COPY . .
 
 # Install concurrently to run both frontend and backend
-RUN cd ./frontend
-RUN npm install concurrently
+RUN npm install --prefix ./frontend concurrently
 
 # Expose the ports for both services
-RUN cd ..
 EXPOSE 5173 5000
 
 # Command to run both applications using concurrently
-CMD ["npx", "concurrently", "npm run dev --prefix ./frontend", "node ./backend index.js"]
+CMD ["npx", "concurrently", "npm run dev --prefix ./frontend", "node ./backend/index.js"]
