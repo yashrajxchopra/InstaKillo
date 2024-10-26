@@ -5,8 +5,8 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 # Copy package.json and package-lock.json for both frontend and backend
-COPY package.json package-lock.json ./
-COPY Server/package.json Server/package-lock.json ./Server/
+COPY package.json ./
+COPY Server/package.json ./Server/
 
 # Install dependencies for both frontend and backend
 RUN npm install
