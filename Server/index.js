@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
+const admin = require("firebase-admin");
 const {
   generateToken,
   authenticateToken,
@@ -28,6 +29,12 @@ mongoose
   .then(() => console.log("MongoDB connected successfully"))
   .catch((err) => console.log("MongoDB connection error:", err));
 
+  const serviceAccount = require("./serviceAccountKey.json");
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: "instakillo-image-storage.appspot.com", 
+  });
+const bucket = admin.storage().bucket();
 const app = express();
 
 app.use(cors());
@@ -72,19 +79,19 @@ const UserSchema = new mongoose.Schema({
 const User = mongoose.model("User", UserSchema);
 
 // Multer storage configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + generateRandomString();
-    const originalExtension = path.extname(file.originalname);
-    const uniqueFileName =
-      file.fieldname + "-" + uniqueSuffix + originalExtension;
-    cb(null, uniqueFileName);
-  },
-});
-const upload = multer({ storage: storage });
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads/");
+//   },
+//   filename: function (req, file, cb) {
+//     const uniqueSuffix = Date.now() + "-" + generateRandomString();
+//     const originalExtension = path.extname(file.originalname);
+//     const uniqueFileName =
+//       file.fieldname + "-" + uniqueSuffix + originalExtension;
+//     cb(null, uniqueFileName);
+//   },
+// });
+const upload = multer({ storage: multer.memoryStorage() }); 
 
 const PostSchema = new mongoose.Schema({
   caption: { type: String },
@@ -121,7 +128,6 @@ app.post("/api/register", async (req, res) => {
     });
 
     if (existingUser) {
-      // Check if the conflict is with username or email
       if (existingUser.username === username) {
         return res.status(400).json({ error: "Username is already in use." });
       }
@@ -185,23 +191,53 @@ app.post(
     try {
       const userId = req.user.userId;
       const allowedExtensions = ["jpg", "jpeg", "png"];
-      const fileName = req.file.filename;
-      const fileNameParts = fileName.split(".");
-      const fileExtension =
-        fileNameParts[fileNameParts.length - 1].toLocaleLowerCase();
+
       if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
       }
+
+      const originalFileName = req.file.originalname;
+      const fileExtension = originalFileName.split(".").pop().toLowerCase();
       if (!allowedExtensions.includes(fileExtension)) {
-        fs.unlinkSync(path.join("uploads", fileName));
-        return res.status(400).json({ error: "Not a image" });
+        return res.status(400).json({ error: "Invalid image format" });
       }
-      const { caption } = req.body;
-      const imagePath = req.file
-        ? path.join("../../../Server/uploads", req.file.filename)
-        : null;
+
+      const fileName = `${Date.now()}-${generateRandomString()}.${fileExtension}`;
+
+      const uploadImage = () => {
+        return new Promise((resolve, reject) => {
+          const fileUpload = bucket.file(`images/${fileName}`);
+          const stream = fileUpload.createWriteStream({
+            metadata: {
+              contentType: req.file.mimetype,
+            },
+          });
+
+          stream.on("error", (err) => {
+            console.error("Error uploading to Firebase:", err);
+            reject(err);
+          });
+
+          stream.on("finish", async () => {
+            await fileUpload.makePublic();
+            const publicUrl = `https://storage.googleapis.com/${bucket.name}/images/${fileName}`;
+            resolve(publicUrl);
+          });
+
+          stream.end(req.file.buffer);
+        });
+      };
+
+      let imagePath;
+      try {
+        imagePath = await uploadImage();
+      } catch (uploadError) {
+        console.error("Error uploading image:", uploadError);
+        return res.status(500).send("Error uploading image");
+      }
+
       const newPost = new Post({
-        caption: caption,
+        caption: req.body.caption,
         createdBy: userId,
         image: imagePath,
         comments: [],
@@ -209,22 +245,23 @@ app.post(
       });
 
       await newPost.save();
-      //console.log(req.user._id + "  " + newPost._id);
+
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ error: "User not found" });
       }
+
       user.posts.push(newPost._id);
       await user.save();
 
-      res
-        .status(200)
-        .json({ message: "Post added successfully", post: newPost });
+      res.status(200).json({ message: "Post added successfully", post: newPost });
     } catch (err) {
+      console.error("Error in POST /api/posts:", err);
       res.status(500).json({ error: err.message });
     }
   }
 );
+
 //like the post
 app.post("/api/posts/:postId/like", authenticateToken, async (req, res) => {
   const userId = req.user.userId;

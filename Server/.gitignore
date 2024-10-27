@@ -1,5 +1,6 @@
 .env
 Server.rar
 package-lock.json
+serviceAccountKey.json
 
 node_modules/
