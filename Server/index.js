@@ -39,7 +39,6 @@ const app = express();
 
 async function deleteFileFromUrl(imageUrl) {
   const filePath = "images/" + decodeURIComponent(imageUrl.split("/").pop().split("?")[0]);
-  console.log(filePath)
   try {
     await bucket.file(filePath).delete();
   } catch (error) {
@@ -283,7 +282,10 @@ app.delete('/api/posts/:id', authenticateToken,async (req, res) => {
     if (!deletedPost) {
       return res.status(404).json({ message: 'Post not found' });
     }
-    
+    if(deletedPost.image.includes("googleapis")){
+      await deleteFileFromUrl(deletedPost.image);
+    }
+
     res.status(200).json({ message: 'Post deleted successfully.', deletedPost });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting post', error });

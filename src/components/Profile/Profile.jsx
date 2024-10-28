@@ -206,7 +206,7 @@ function Profile() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {userPosts.map((post) => (
+            {userPosts.slice().reverse().map((post) => (
               <div
                 key={post._id}
                 className="relative w-full h-40 md:h-60 overflow-hidden bg-gray-800 group"
