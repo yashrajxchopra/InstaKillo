@@ -33,7 +33,7 @@ function Profile() {
   const [followersDetails, setFollowersDetails] = useState([]);
   const [followingDetails, setFollowingDetails] = useState([]);
   const [errorP, setErrorP] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+  const [isFocused, setIsFocused] = useState(true);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -43,16 +43,19 @@ function Profile() {
   let count = 0;
   let clickedPost;
   const handleImageClick = (post) => {
+    if (!/Mobi|Android/i.test(navigator.userAgent)) 
+      {
+        setSelectedPost(post);
+      }
     if (isFocused) {
-      if (!/Mobi|Android/i.test(navigator.userAgent)) setSelectedPost(post);
-      if (count === 1) {
+      if (count===1) {
         if (clickedPost._id == post._id) {
           setSelectedPost(post);
         }
         count = 0;
       }
-      count++;
       clickedPost = structuredClone(post);
+      count++;
     } else {
       setIsFocused(true);
     }
@@ -140,7 +143,6 @@ function Profile() {
   useEffect(() => {
     fetchProfile();
   }, [username]);
-
   useEffect(() => {
     if (userData.username) {
       fetchPosts();
@@ -216,6 +218,7 @@ function Profile() {
                   alt={`Post ${post._id}`}
                   className="object-cover w-full h-full transition-transform duration-300 transform hover:scale-105 cursor-pointer"
                   onClick={() => handleImageClick(post)}
+                  onFocus={() => setIsFocused(true)}
                 />
                 {userData.isProfileOwner && (
                   <button
