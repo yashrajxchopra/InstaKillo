@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import ConfirmBox from "./ConfirmBox";
 
 export default function ProfileEditor({ setIsEditorOpen, profile, setUserData }) {
   const [username, setUsername] = useState(profile.username);
@@ -35,11 +36,13 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setUserData })
       setLoading(false);
       setIsConfirmOpen(false);
       setIsEditorOpen(false);
-      if(!response.data.message == "No changes to update."){
-        setUserData(response.data);
-        toast.success("Profile Editted");
+      console.log(response.data)
+      if(response.data.message == "No changes to update."){
+        setErrorMessage("");
+        return;
       }
-      setErrorMessage("");
+      setUserData(response.data);
+      toast.success("Profile Editted");
     } catch (error) {
       console.log("Error creating post:", error);
       if (error.response.status === 400) {
@@ -150,50 +153,9 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setUserData })
           {errorMessage && (
             <div className="text-red-500 mb-2">{errorMessage}</div>
           )}
-          {isConfirmOpen && <ConfirmBox handleSubmit={handleSubmit} setIsConfirmOpen={setIsConfirmOpen} loading={loading}/>}
+          {isConfirmOpen && <ConfirmBox handleSubmit={handleSubmit} setIsConfirmOpen={setIsConfirmOpen} loading={loading} textToDisplay={"Confirm Edit?"}/>}
         </div>
       </div>
     </>
   );
-}
-function ConfirmBox({handleSubmit, setIsConfirmOpen, loading}) {
-return(
-  <>
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-black w-[200px] h-[110px] p-4 rounded-lg shadow-md flex flex-col items-center justify-between relative">
-      <h3 className="text-white text-center font-medium">Confirm Edit</h3>
-
-      <button
-        onClick={() => setIsConfirmOpen(false)}
-        className="absolute top-2 right-2 text-white bg-red-500 rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      </button>
-
-      <button
-        type="button"
-        onClick={handleSubmit}
-        disabled={loading}
-        className="w-full bg-indigo-600 text-white font-semibold rounded-md px-3 py-1.5 hover:bg-indigo-500 mt-2"
-      >
-        {loading ? "Processing..." : "Yes"}
-      </button>
-    </div>
-  </div>
-</>
-);
 }

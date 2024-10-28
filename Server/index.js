@@ -274,6 +274,21 @@ app.post(
   }
 );
 
+// delete a post by _id
+app.delete('/api/posts/:id', authenticateToken,async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const deletedPost = await Post.findByIdAndDelete(postId);
+    
+    if (!deletedPost) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    
+    res.status(200).json({ message: 'Post deleted successfully.', deletedPost });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting post', error });
+  }
+});
 //like the post
 app.post("/api/posts/:postId/like", authenticateToken, async (req, res) => {
   const userId = req.user.userId;
