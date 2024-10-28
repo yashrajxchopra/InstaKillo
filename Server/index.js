@@ -636,7 +636,17 @@ app.post(
         return res.status(200).json({ message: "No changes to update." });
       }
       if (isBioChanged) user.bio = newBio;
-      if (isUsernameChanged) user.username = newUsername;
+      if (isUsernameChanged) {
+        const existingUser = await User.findOne({
+          $or: [{ username }],
+        });
+    
+        if (existingUser) {
+          if (existingUser.username === newUsername) {
+            return res.status(400).json({ error: "Username is already in use." });
+          }
+        user.username = newUsername;
+      }
       let imagePath;
       if (req.file) {
         if(user.pfp.includes("googleapis")){
