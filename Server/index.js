@@ -12,7 +12,7 @@ const {
   tokenDecoder,
   verifyToken,
 } = require("./jwtUtils");
-const { error } = require("console");
+const { error, log } = require("console");
 require("dotenv").config();
 const fs = require("fs");
 
@@ -29,13 +29,23 @@ mongoose
   .then(() => console.log("MongoDB connected successfully"))
   .catch((err) => console.log("MongoDB connection error:", err));
 
-  const serviceAccount = require("./serviceAccountKey.json");
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    storageBucket: "instakillo-image-storage.appspot.com", 
-  });
+const serviceAccount = require("./serviceAccountKey.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "instakillo-image-storage.appspot.com",
+});
 const bucket = admin.storage().bucket();
 const app = express();
+
+async function deleteFileFromUrl(imageUrl) {
+  const filePath = "images/" + decodeURIComponent(imageUrl.split("/").pop().split("?")[0]);
+  console.log(filePath)
+  try {
+    await bucket.file(filePath).delete();
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 app.use(cors());
 
@@ -91,7 +101,7 @@ const User = mongoose.model("User", UserSchema);
 //     cb(null, uniqueFileName);
 //   },
 // });
-const upload = multer({ storage: multer.memoryStorage() }); 
+const upload = multer({ storage: multer.memoryStorage() });
 
 const PostSchema = new mongoose.Schema({
   caption: { type: String },
@@ -254,7 +264,9 @@ app.post(
       user.posts.push(newPost._id);
       await user.save();
 
-      res.status(200).json({ message: "Post added successfully", post: newPost });
+      res
+        .status(200)
+        .json({ message: "Post added successfully", post: newPost });
     } catch (err) {
       console.error("Error in POST /api/posts:", err);
       res.status(500).json({ error: err.message });
@@ -390,20 +402,24 @@ app.get(
   authenticateToken,
   async (req, res) => {
     let { count } = req.params;
-    if(count > 10){
+    if (count > 10) {
       count = 10;
     }
     const userId = req.user.userId;
 
     try {
-      const currentUser = await User.findById(userId).populate('following', '_id').select("following");
+      const currentUser = await User.findById(userId)
+        .populate("following", "_id")
+        .select("following");
       const userObjectId = new mongoose.Types.ObjectId(userId);
       // Convert currentUser.following from strings to ObjectId
-      const followingIds = currentUser.following.map(f => new mongoose.Types.ObjectId(f));
+      const followingIds = currentUser.following.map(
+        (f) => new mongoose.Types.ObjectId(f)
+      );
       const users = await User.aggregate([
-        { $match: { _id: { $nin: [...followingIds, userObjectId] } } },  
+        { $match: { _id: { $nin: [...followingIds, userObjectId] } } },
         { $sample: { size: Number(count) } },
-        { $project: { username: 1, pfp: 1 } }
+        { $project: { username: 1, pfp: 1 } },
       ]);
       return res.json(users);
     } catch (error) {
@@ -413,71 +429,80 @@ app.get(
   }
 );
 //follow user
-app.post('/api/follow/:username', authenticateToken, async (req, res) =>{
+app.post("/api/follow/:username", authenticateToken, async (req, res) => {
   const { username } = req.params;
   const userId = req.user.userId;
   try {
-    const currentUser = await User.findById(userId).select('following');
+    const currentUser = await User.findById(userId).select("following");
 
     if (!currentUser) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const userToFollow = await User.findOne({ username }).select('_id followers');
+    const userToFollow = await User.findOne({ username }).select(
+      "_id followers"
+    );
 
     if (!userToFollow) {
-      return res.status(404).json({ message: 'User to follow not found' });
+      return res.status(404).json({ message: "User to follow not found" });
     }
 
     if (currentUser.following.includes(userToFollow._id)) {
-      return res.status(400).json({ message: 'You are already following this user' });
+      return res
+        .status(400)
+        .json({ message: "You are already following this user" });
     }
-    
+
     currentUser.following.push(userToFollow._id);
 
     if (!userToFollow.followers.includes(currentUser._id)) {
-      userToFollow.followers.push(currentUser._id); 
+      userToFollow.followers.push(currentUser._id);
     }
 
     await currentUser.save();
     await userToFollow.save();
 
-    return res.status(200).json({ message: `You are now following ${username}` });
+    return res
+      .status(200)
+      .json({ message: `You are now following ${username}` });
   } catch (error) {
-    console.error('Error following user:', error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error following user:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-
 });
 //unfollow user
-app.post('/api/unfollow/:username', authenticateToken, async (req, res) => {
+app.post("/api/unfollow/:username", authenticateToken, async (req, res) => {
   const { username } = req.params;
   const userId = req.user.userId;
 
   try {
-    const currentUser = await User.findById(userId).select('following');
+    const currentUser = await User.findById(userId).select("following");
     if (!currentUser) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const userToUnfollow = await User.findOne({ username }).select('_id followers');
+    const userToUnfollow = await User.findOne({ username }).select(
+      "_id followers"
+    );
     if (!userToUnfollow) {
-      return res.status(404).json({ message: 'User to unfollow not found' });
+      return res.status(404).json({ message: "User to unfollow not found" });
     }
 
     // Check if the current user is following the user to unfollow
     if (!currentUser.following.includes(userToUnfollow._id)) {
-      return res.status(400).json({ message: 'You are not following this user' });
+      return res
+        .status(400)
+        .json({ message: "You are not following this user" });
     }
 
     // Remove userToUnfollow from currentUser's following list
     currentUser.following = currentUser.following.filter(
-      id => id.toString() !== userToUnfollow._id.toString()
+      (id) => id.toString() !== userToUnfollow._id.toString()
     );
 
     // Remove currentUser's ID from userToUnfollow's followers list
     userToUnfollow.followers = userToUnfollow.followers.filter(
-      id => id.toString() !== currentUser._id.toString()
+      (id) => id.toString() !== currentUser._id.toString()
     );
 
     await currentUser.save();
@@ -485,21 +510,32 @@ app.post('/api/unfollow/:username', authenticateToken, async (req, res) => {
 
     return res.status(200).json({ message: `You have unfollowed ${username}` });
   } catch (error) {
-    console.error('Error unfollowing user:', error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error unfollowing user:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
 //fecth user profile
-app.get("/api/profile/:username",authenticateToken, async (req, res) => {
+app.get("/api/profile/:username", authenticateToken, async (req, res) => {
   const username = req.params.username;
+  const userId = req.user.userId;
+  let isProfileOwner = false;
 
   try {
-    const user = await User.findOne({username});
+    const user = await User.findOne({ username });
 
     if (user) {
       const { username, bio, pfp, posts, followers, following } = user;
-      res.json({ username, bio, pfp, posts, followers, following });
+      if (userId == user._id) isProfileOwner = true;
+      res.json({
+        username,
+        bio,
+        pfp,
+        posts,
+        followers,
+        following,
+        isProfileOwner,
+      });
     } else {
       res.status(404).json({ message: "User not found" });
     }
@@ -508,31 +544,121 @@ app.get("/api/profile/:username",authenticateToken, async (req, res) => {
   }
 });
 //checkIfFollowing
-app.get("/api/checkIfFollowing/:username", authenticateToken, async (req, res) => {
-const userId = req.user.userId;
-const { username } = req.params;
-try {
-  const currentUser = await User.findById(userId).select('following');
-  if (!currentUser) {
-    return res.status(404).json({ message: 'User not found' });
+app.get(
+  "/api/checkIfFollowing/:username",
+  authenticateToken,
+  async (req, res) => {
+    const userId = req.user.userId;
+    const { username } = req.params;
+    try {
+      const currentUser = await User.findById(userId).select("following");
+      if (!currentUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const userToCheck = await User.findOne({ username }).select(
+        "_id followers"
+      );
+      if (!userToCheck) {
+        return res.status(404).json({ message: "User to unfollow not found" });
+      }
+
+      if (!currentUser.following.includes(userToCheck._id)) {
+        return res.status(200).json({ message: "False" });
+      }
+
+      return res.status(200).json({ message: `True` });
+    } catch (error) {
+      console.error("Error  in Checking:", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
   }
+);
+app.post(
+  "/api/editprofile",
+  authenticateToken,
+  upload.single("image"),
+  async (req, res) => {
+    const uploadImage = (fileName) => {
+      return new Promise((resolve, reject) => {
+        const fileUpload = bucket.file(`images/${fileName}`);
+        const stream = fileUpload.createWriteStream({
+          metadata: {
+            contentType: req.file.mimetype,
+          },
+        });
 
-  const userToCheck = await User.findOne({ username }).select('_id followers');
-  if (!userToCheck) {
-    return res.status(404).json({ message: 'User to unfollow not found' });
+        stream.on("error", (err) => {
+          console.log("Error uploading to Firebase:", err);
+          reject(err);
+        });
+
+        stream.on("finish", async () => {
+          await fileUpload.makePublic();
+          const publicUrl = `https://storage.googleapis.com/${bucket.name}/images/${fileName}`;
+          resolve(publicUrl);
+        });
+
+        stream.end(req.file.buffer);
+      });
+    };
+
+    try {
+      if (!req.body.username)
+        return res.status(404).json({ error: "Username cannot be empty." });
+      const userId = req.user.userId;
+      const newBio = req.body.bio;
+      const newUsername = req.body.username;
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found." });
+      }
+      const isBioChanged = newBio && newBio !== user.bio;
+      const isUsernameChanged = newUsername && newUsername !== user.username;
+      if (!isBioChanged && !isUsernameChanged &&!req.file) {
+        return res.status(200).json({ message: "No changes to update." });
+      }
+      if (isBioChanged) user.bio = newBio;
+      if (isUsernameChanged) user.username = newUsername;
+      let imagePath;
+      if (req.file) {
+        if(user.pfp.includes("googleapis")){
+          await deleteFileFromUrl(user.pfp);
+        }
+        const originalFileName = req.file.originalname;
+        const fileExtension = originalFileName.split(".").pop().toLowerCase();
+        const allowedExtensions = ["jpg", "jpeg", "png"];
+        if (!allowedExtensions.includes(fileExtension)) {
+          return res.status(400).json({ error: "Invalid image format" });
+        }
+        const fileName = `${Date.now()}-${generateRandomString()}.${fileExtension}`;
+        try {
+          imagePath = await uploadImage(fileName);
+          user.pfp = imagePath;
+        } catch (uploadError) {
+          console.log("Error uploading image:", uploadError);
+          return res.status(500).send("Error uploading image");
+        }
+      }      
+      await user.save();
+      const isProfileOwner = true;
+      const { username, bio, pfp, posts, followers, following } = user;
+      res.json({
+        username,
+        bio,
+        pfp,
+        posts,
+        followers,
+        following,
+        isProfileOwner,
+      });
+      
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Server error" });
+    }
   }
-
-  if (!currentUser.following.includes(userToCheck._id)) {
-    return res.status(200).json({ message: 'False' });
-  }
-
-  return res.status(200).json({ message: `True` });
-} catch (error) {
-  console.error('Error  in Checking:', error);
-  return res.status(500).json({ message: 'Internal Server Error' });
-}
-
-});
+);
 
 //test
 app.get("/api/test", (req, res) => {

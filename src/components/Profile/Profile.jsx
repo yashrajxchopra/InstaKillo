@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import unfollowUser from '../../hooks/unfollowUser';
 import followUser from '../../hooks/followUser';
 import checkIfFollowing from '../../hooks/checkIfFollowing';
+import ProfileEditor from './ProfileEditor';
 
 function Profile() {
   const [userData, setUserData] = useState({
@@ -30,6 +31,7 @@ function Profile() {
   const [followersDetails, setFollowersDetails] = useState([]);
   const [followingDetails, setFollowingDetails] = useState([]);
   const [errorP, setErrorP] = useState('');
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
   const openModal = () => setCreateModal(true);
   const closeModal = () => setCreateModal(false);
 
@@ -119,6 +121,10 @@ function Profile() {
           <div>
             <h2 className="text-3xl font-bold">{userData.username}</h2>
             <p className="text-gray-400 mt-2">{userData.bio}</p>
+            {userData.isProfileOwner && <button onClick={()=> setIsEditorOpen(true)} className="text-blue-500">
+                Edit Profile
+              </button>}
+            {isEditorOpen && <ProfileEditor setIsEditorOpen={setIsEditorOpen} profile={userData} setUserData={setUserData} />}
             <div className="flex mt-4 space-x-4">
               <button onClick={fetchFollowersDetails} className="text-blue-500">
                 Followers: {userData.followers.length}

@@ -58,7 +58,7 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
             Create a Post
           </h2>
           <button
-            onClick={closeModal} // Call your close modal function
+            onClick={closeModal} 
             className="absolute top-2 right-2 text-white bg-red-500 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 mt-3"
           >
             <svg

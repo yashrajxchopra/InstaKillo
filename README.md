@@ -36,6 +36,7 @@ InstaKillo is a modern web application designed to streamline your social media 
 - **Database:** MongoDB
 - **Containerization:** Docker
 - **Authentication:** JSON Web Tokens (JWT)
+- **Image Storage** Firebase Storage
 
 ## Getting Started
 
@@ -62,12 +63,16 @@ To get a local copy of this project up and running, follow these steps:
    Replace http://192.168.1.4:5000 with localhost:5173 in ./.env
 
 5. **Run the application using Docker Compose:**
+   
+   Setup Firebase Storage and copy your service account key json file to file ./Server/serviceAccountKey.json. change Storage bucket to "<your-project-id>.appspot.com" at line 35 in ./Server/index.js
+
+6. **Run the application using Docker Compose:**
 
    ```bash
    docker-compose up --build
    ```
 
-6. **Access the application:**
+7. **Access the application:**
 
    Open your web browser and go to `http://localhost:5173` for the frontend and `http://localhost:5000` for the backend API.
 
