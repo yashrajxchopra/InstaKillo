@@ -44,7 +44,8 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setUserData })
       setUserData(response.data);
       toast.success("Profile Editted");
     } catch (error) {
-      console.log("Error creating post:", error);
+      setLoading(false);
+      setIsConfirmOpen(false);
       if (error.response.status === 400) {
         setErrorMessage(error.response.data.error);
       } else {

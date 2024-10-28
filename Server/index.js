@@ -38,11 +38,12 @@ const bucket = admin.storage().bucket();
 const app = express();
 
 async function deleteFileFromUrl(imageUrl) {
-  const filePath = "images/" + decodeURIComponent(imageUrl.split("/").pop().split("?")[0]);
+  const filePath =
+    "images/" + decodeURIComponent(imageUrl.split("/").pop().split("?")[0]);
   try {
     await bucket.file(filePath).delete();
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 }
 
@@ -274,21 +275,23 @@ app.post(
 );
 
 // delete a post by _id
-app.delete('/api/posts/:id', authenticateToken,async (req, res) => {
+app.delete("/api/posts/:id", authenticateToken, async (req, res) => {
   try {
     const postId = req.params.id;
     const deletedPost = await Post.findByIdAndDelete(postId);
-    
+
     if (!deletedPost) {
-      return res.status(404).json({ message: 'Post not found' });
+      return res.status(404).json({ message: "Post not found" });
     }
-    if(deletedPost.image.includes("googleapis")){
+    if (deletedPost.image.includes("googleapis")) {
       await deleteFileFromUrl(deletedPost.image);
     }
 
-    res.status(200).json({ message: 'Post deleted successfully.', deletedPost });
+    res
+      .status(200)
+      .json({ message: "Post deleted successfully.", deletedPost });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting post', error });
+    res.status(500).json({ message: "Error deleting post", error });
   }
 });
 //like the post
@@ -632,24 +635,28 @@ app.post(
       }
       const isBioChanged = newBio && newBio !== user.bio;
       const isUsernameChanged = newUsername && newUsername !== user.username;
-      if (!isBioChanged && !isUsernameChanged &&!req.file) {
+      if (!isBioChanged && !isUsernameChanged && !req.file) {
         return res.status(200).json({ message: "No changes to update." });
       }
       if (isBioChanged) user.bio = newBio;
       if (isUsernameChanged) {
+        const username = newUsername;
         const existingUser = await User.findOne({
           $or: [{ username }],
         });
-    
+
         if (existingUser) {
           if (existingUser.username === newUsername) {
-            return res.status(400).json({ error: "Username is already in use." });
+            return res
+              .status(400)
+              .json({ error: "Username is already in use." });
           }
+        }
         user.username = newUsername;
       }
       let imagePath;
       if (req.file) {
-        if(user.pfp.includes("googleapis")){
+        if (user.pfp.includes("googleapis")) {
           await deleteFileFromUrl(user.pfp);
         }
         const originalFileName = req.file.originalname;
@@ -666,7 +673,7 @@ app.post(
           console.log("Error uploading image:", uploadError);
           return res.status(500).send("Error uploading image");
         }
-      }      
+      }
       await user.save();
       const isProfileOwner = true;
       const { username, bio, pfp, posts, followers, following } = user;
@@ -679,7 +686,6 @@ app.post(
         following,
         isProfileOwner,
       });
-      
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: "Server error" });
