@@ -35,8 +35,10 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setUserData })
       setLoading(false);
       setIsConfirmOpen(false);
       setIsEditorOpen(false);
-      setUserData(response.data);
-      toast.success("Profile Editted");
+      if(!response.data.message == "No changes to update."){
+        setUserData(response.data);
+        toast.success("Profile Editted");
+      }
       setErrorMessage("");
     } catch (error) {
       console.log("Error creating post:", error);
