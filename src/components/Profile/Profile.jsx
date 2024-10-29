@@ -23,6 +23,7 @@ function Profile() {
     posts: [],
     followers: [],
     following: [],
+    isProfileOwner: false,
   });
   const { username } = useParams();
   const [userPosts, setUserPosts] = useState([]);
@@ -33,7 +34,6 @@ function Profile() {
   const [followersDetails, setFollowersDetails] = useState([]);
   const [followingDetails, setFollowingDetails] = useState([]);
   const [errorP, setErrorP] = useState("");
-  const [isFocused, setIsFocused] = useState(true);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -47,7 +47,6 @@ function Profile() {
       {
         setSelectedPost(post);
       }
-    if (isFocused) {
       if (count===1) {
         if (clickedPost._id == post._id) {
           setSelectedPost(post);
@@ -56,9 +55,9 @@ function Profile() {
       }
       clickedPost = structuredClone(post);
       count++;
-    } else {
-      setIsFocused(true);
-    }
+  };
+  const handleClickOnOpenedPost = (event) => {
+    setSelectedPost(null);
   };
   const handleClickOnX = async (id) => {
     setDeleteId(id);
@@ -152,7 +151,7 @@ function Profile() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="navbar">
-        <Navbar openModal={openModal} />
+        <Navbar openModal={openModal} username={userData && userData.isProfileOwner ? userData.username:'#'}/>
       </div>
       {createModal && <CreatePost closeModal={closeModal} />}
 
@@ -208,7 +207,7 @@ function Profile() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {userPosts.slice().reverse().map((post) => (
+            {userPosts.slice().reverse().map((post, index) => (
               <div
                 key={post._id}
                 className="relative w-full h-40 md:h-60 overflow-hidden bg-gray-800 group"
@@ -218,7 +217,6 @@ function Profile() {
                   alt={`Post ${post._id}`}
                   className="object-cover w-full h-full transition-transform duration-300 transform hover:scale-105 cursor-pointer"
                   onClick={() => handleImageClick(post)}
-                  onFocus={() => setIsFocused(true)}
                 />
                 {userData.isProfileOwner && (
                   <button
@@ -282,7 +280,7 @@ function Profile() {
       )}
 
       {selectedPost && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm z-50" onClick={handleClickOnOpenedPost}>
           <div className="p-4 rounded-lg shadow-lg max-w-3xl w-full mx-4">
             <button
               onClick={handleCloseModal}

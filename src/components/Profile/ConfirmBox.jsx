@@ -2,7 +2,7 @@ export default function ConfirmBox({handleSubmit, setIsConfirmOpen, loading, tex
     return(
       <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-black w-[200px] h-[110px] p-4 rounded-lg shadow-md flex flex-col items-center justify-between relative">
+        <div className="bg-black w-[200px] h-auto p-4 rounded-lg shadow-md flex flex-col items-center justify-between relative">
           <h3 className="text-white text-center font-medium">{textToDisplay}</h3>
     
           <button

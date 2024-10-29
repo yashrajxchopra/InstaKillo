@@ -62,7 +62,7 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setUserData })
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-black w-3/4 max-w-[500px] h-[460px] p-5 rounded-lg shadow-md relative">
+        <div className="bg-black w-3/4 max-w-[500px] h-auto p-5 rounded-lg shadow-md relative">
           <h2 className="text-xl text-gray-300 font-semibold mb-4">
             Edit Profile
           </h2>

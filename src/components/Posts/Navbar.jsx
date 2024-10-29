@@ -25,7 +25,6 @@ export default function Navbar({ openModal, username }) {
   const [activityVisible, setActivityVisible] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef(null);
-
   const navigation = [
     { name: "Feed", href: "#", current: true },
     { name: "Team", href: "#", current: false },

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./styles.css";
 import searchIcon from "./img/icon/search.png";
 import homeIcon from "./img/icon/home.png";
@@ -25,14 +25,16 @@ import Navbar from "./Navbar";
 import getSuggestedUser from "../../hooks/getSuggestedUser";
 import followUser from "../../hooks/followUser";
 import unfollowUser from "../../hooks/unfollowUser";
+import ConfirmBox from "../Profile/ConfirmBox";
 
-const Feed = () => {
+const Feed = ({ children }) => {
   const [heartIconn, setHeartIcon] = useState(redheartIcon);
   const [activityVisible, setActivityVisible] = useState(false);
   const [posts, setPosts] = useState([]);
   const [userData, setUserData] = useState();
   const [createModal, setCreateModal] = useState(false);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
+  const [isConfrimOpen, setIsConfirmOpen] = useState(!sessionStorage.getItem('warning'));
   const openModal = () => setCreateModal(true);
   const closeModal = () => setCreateModal(false);
   const API_URL = import.meta.env.VITE_API_URL;
@@ -200,6 +202,14 @@ const Feed = () => {
           </div>
         </div>
       </div>
+      {isConfrimOpen ? (
+        <ConfirmBox 
+          handleSubmit={() => {sessionStorage.setItem('warning', 1); setIsConfirmOpen(false);}}
+          setIsConfirmOpen={setIsConfirmOpen}
+          loading={false}
+          textToDisplay={"This is site is in development and can have security flaws. Donnot upload sensitive data. UnderStood?"}
+        />
+      ): null}
     </div>
   );
 };

@@ -37,7 +37,11 @@ export default function TestPost({ post, updatePostData }) {
   const [commentData, setCommentData] = useState([]);
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
-
+  
+  const handlePostClick = (event) => {
+    event.stopPropagation(); // Prevents the click from bubbling up
+    console.log("TestPost was clicked");
+  };
   const handleClick = () => {
     navigate(`/${userData.username}`);
   };
@@ -236,7 +240,7 @@ export default function TestPost({ post, updatePostData }) {
   return (
     <>
       <div className="flex justify-center items-center mt-2 mb-2 ">
-        <div className="text-gray-300  bg-darkgray w-full sm:w-11/12 md:w-9/12 lg:w-2/3 max-w-2xl h-auto rounded-md border border-gray-400">
+        <div className="text-gray-300  bg-darkgray w-full sm:w-11/12 md:w-9/12 lg:w-2/3 max-w-2xl h-auto rounded-md border border-gray-400" onClick={handlePostClick}>
           {!isOpen ? (
             <div className="flex justify-center items-center p-2 gap-2.5">
               {userData ? ( 
