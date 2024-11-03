@@ -39,8 +39,7 @@ export default function TestPost({ post, updatePostData }) {
   const API_URL = import.meta.env.VITE_API_URL;
   
   const handlePostClick = (event) => {
-    event.stopPropagation(); // Prevents the click from bubbling up
-    console.log("TestPost was clicked");
+    event.stopPropagation(); 
   };
   const handleClick = () => {
     navigate(`/${userData.username}`);
@@ -68,7 +67,6 @@ export default function TestPost({ post, updatePostData }) {
           },
         }
       );
-      //console.log(user_Id);
       if (likeArray.includes(user_Id.data._id)) {
         setLikeIcon(redheartIcon);
       } else {
@@ -104,14 +102,7 @@ export default function TestPost({ post, updatePostData }) {
 
       for (const comment of post.comments) {
         try {
-          const commentUser = await fetchUserData(comment.createdBy); // Fetch user data for each comment
-          // console.log(
-          //   commentUser,
-          //   "Fetched comment user data",
-          //   comment.createdBy
-          // );
-
-          // Push the fetched data into the new array
+          const commentUser = await fetchUserData(comment.createdBy);
           newCommentData.push({
             user: commentUser.username,
             pfp: commentUser.pfp,
@@ -125,7 +116,6 @@ export default function TestPost({ post, updatePostData }) {
         }
       }
 
-      //console.log(newCommentData);
       setCommentData(newCommentData);
     }
   };
@@ -140,7 +130,7 @@ export default function TestPost({ post, updatePostData }) {
   };
 
   const toggleLike = async () => {
-    //setLikeIcon(likeIcon === redheartIcon ? heartIcon : redheartIcon);
+    
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
@@ -154,21 +144,6 @@ export default function TestPost({ post, updatePostData }) {
       );
       updatePostData(post._id, response.data.post);
       checkLike(response.data.post.likes);
-      // const user_Id = await axios.post('http://localhost:5000/api/getUserId',{},
-      //     {
-      //         headers: {
-      //             'Authorization': `Bearer ${token}`
-      //         }
-      //     }
-      // );
-      // console.log(user_Id)
-      // if(response.data.post.likes.includes(user_Id.data._id)){
-      //     setLikeIcon(redheartIcon);
-      // }
-      // else{
-      //     setLikeIcon(heartIcon);
-      // }
-      //setLikeIcon(likeIcon === redheartIcon ? heartIcon : redheartIcon);
     } catch (error) {
       if (error.response) {
         toast.error("Error adding like:", error.response.data.error);

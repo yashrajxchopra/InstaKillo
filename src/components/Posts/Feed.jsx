@@ -46,6 +46,49 @@ const Feed = ({ children }) => {
     setActivityVisible(!activityVisible);
     setHeartIcon(heartIconn === heartIcon ? heartIconF : heartIcon);
   };
+  const fetchPost = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${API_URL}/api/posts`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      try {
+        const userId = await axios.post(
+          `${API_URL}/api/getUserId`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const tempUserData = await fetchUserData(userId.data._id);
+        setUserData(tempUserData);
+      } catch (error) {
+        toast.error("Error getting user Profile");
+        setUserData({
+          username: "Not Found",
+          bio: "Not found",
+          pfp: "../../../Server/uploads\\defaultpfp.png",
+        });
+      }
+      setPosts(response.data);
+    } catch (error) {
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
+        toast.error("Session expired or invalid token, please login again!");
+        localStorage.removeItem("token");
+        navigate("/login");
+      } else {
+        toast.error("Error occurred while processing request!");
+        console.error("Error details:", error);
+      }
+    }
+  };
 
   const handleClick = (username) => {
     navigate(`/${username}`);
@@ -74,51 +117,6 @@ const Feed = ({ children }) => {
   };
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${API_URL}/api/posts`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        try {
-          const userId = await axios.post(
-            `${API_URL}/api/getUserId`,
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          const tempUserData = await fetchUserData(userId.data._id);
-          setUserData(tempUserData);
-        } catch (error) {
-          toast.error("Error getting user Profile");
-          setUserData({
-            username: "Not Found",
-            bio: "Not found",
-            pfp: "../../../Server/uploads\\defaultpfp.png",
-          });
-        }
-        setPosts(response.data);
-        //console.log(response.data);
-      } catch (error) {
-        if (
-          error.response &&
-          (error.response.status === 401 || error.response.status === 403)
-        ) {
-          toast.error("Session expired or invalid token, please login again!");
-          localStorage.removeItem("token");
-          navigate("/login"); // Redirect to login page
-        } else {
-          // Other errors, e.g., server issues, network errors, etc.
-          toast.error("Error occurred while processing request!");
-          console.error("Error details:", error);
-        }
-      }
-    };
     const fetchSuggestedUsers = async (count) => {
       try {
         const users = await getSuggestedUser(count);
@@ -130,10 +128,6 @@ const Feed = ({ children }) => {
     fetchSuggestedUsers(3);
     fetchPost();
   }, []);
-  //   if(posts.length === 0)
-  //   {
-  //     return(<div>...Loading</div>)
-  //   }
 
   return (
     <div className="flex flex-col h-screen w-full bg-black">
@@ -146,7 +140,7 @@ const Feed = ({ children }) => {
         <div className="w-full lg:w-2/3 p-4 overflow-y-auto h-full">
           <div className="grid grid-cols-1">
             {posts.map((post, index) => (
-              <div key={index} className="w-full">
+              <div key={index} className="w-full" onFocus={index === 7 ? () => console.log("Yup") : undefined}>
                 <TestPost post={post} updatePostData={updatePostData} />
               </div>
             ))}
@@ -207,7 +201,7 @@ const Feed = ({ children }) => {
           handleSubmit={() => {sessionStorage.setItem('warning', 1); setIsConfirmOpen(false);}}
           setIsConfirmOpen={setIsConfirmOpen}
           loading={false}
-          textToDisplay={"This is site is in development and can have security flaws. Donnot upload sensitive data. UnderStood?"}
+          textToDisplay={"This is site is in development and can have security flaws. Donot upload sensitive data. UnderStood?"}
         />
       ): null}
     </div>
