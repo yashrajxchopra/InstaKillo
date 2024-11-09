@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./styles.css";
 import searchIcon from "./img/icon/search.png";
 import homeIcon from "./img/icon/home.png";
@@ -26,12 +26,13 @@ import getSuggestedUser from "../../hooks/getSuggestedUser";
 import followUser from "../../hooks/followUser";
 import unfollowUser from "../../hooks/unfollowUser";
 import ConfirmBox from "../Profile/ConfirmBox";
+import { userContext } from "../../App";
 
-const Feed = ({ children }) => {
+const Feed = () => {
   const [heartIconn, setHeartIcon] = useState(redheartIcon);
   const [activityVisible, setActivityVisible] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useContext(userContext);
   const [createModal, setCreateModal] = useState(false);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [isConfrimOpen, setIsConfirmOpen] = useState(!sessionStorage.getItem('warning'));
@@ -40,7 +41,6 @@ const Feed = ({ children }) => {
   const API_URL = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate();
-  //const postId = ['6612e23873da0373eb6b9c13', '6612e2704ba8d67cc327495a'];
 
   const toggleActivity = () => {
     setActivityVisible(!activityVisible);

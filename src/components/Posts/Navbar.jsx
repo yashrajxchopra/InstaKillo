@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import searchIcon from "./img/icon/search.png";
 import homeIcon from "./img/icon/home.png";
 import logout from "./img/icon/logout.png";
@@ -20,10 +20,12 @@ import logoutUser from "../../hooks/logout";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import user from "./img/icon/user.png";
+import { userContext } from "../../App";
 
 export default function Navbar({ openModal, username }) {
   const [activityVisible, setActivityVisible] = useState(false);
   const navigate = useNavigate();
+  const [userData, setUserData] = useContext(userContext);
   const inputRef = useRef(null);
   const navigation = [
     { name: "Feed", href: "#", current: true },
@@ -144,7 +146,7 @@ export default function Navbar({ openModal, username }) {
               >
                 <MenuItem>
                   <a
-                    href={`${username}`}
+                    href={`${userData?.username}`}
                     className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
                   >
                     My Profile

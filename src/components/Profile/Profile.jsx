@@ -164,7 +164,7 @@ function Profile() {
       ) : (
         <div className="max-w-4xl mx-auto p-6 mt-10">
           <div className="flex items-center space-x-8 mb-8">
-            <div className="w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-gray-700">
+            <div className="w-24 h-24 md:w-36 md:h-36 sm:w-24 rounded-full overflow-hidden border-4 border-gray-700 flex-shrink-0">
               <img
                 src={userData ? userData.pfp : defaultpfp}
                 alt={`${userData.username}'s profile picture`}
@@ -172,8 +172,17 @@ function Profile() {
               />
             </div>
             <div>
+            {!userData.isProfileOwner && 
+                <div className="absolute ml-32">
+                  <UserListItem
+              key='profile'
+              user={userData}
+            />
+                  </div>
+              }
               <h2 className="text-3xl font-bold">{userData.username}</h2>
               <p className="text-gray-400 mt-2">{userData.bio}</p>
+              
               {userData.isProfileOwner && (
                 <button
                   onClick={() => setIsEditorOpen(true)}
@@ -190,6 +199,7 @@ function Profile() {
                 />
               )}
               <div className="flex mt-4 space-x-4">
+              
                 <button
                   onClick={fetchFollowersDetails}
                   className="text-blue-500"
@@ -205,7 +215,7 @@ function Profile() {
               </div>
             </div>
           </div>
-
+           
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {userPosts.slice().reverse().map((post, index) => (
               <div
@@ -343,7 +353,9 @@ function UserListItem({ user, closeModal }) {
   const [isFollowing, setIsFollowing] = useState(false);
   const navigate = useNavigate();
   const handleUserClick = () => {
-    closeModal(false);
+    if(!(closeModal === undefined)){
+      closeModal(false);
+    }
     navigate(`/${user.username}`);
   };
 
@@ -380,20 +392,24 @@ function UserListItem({ user, closeModal }) {
   return (
     <div className="px-4 sm:px-6 md:px-8">
       <div className="flex items-center space-x-4 py-2 sm:space-x-6 sm:py-3">
-        <img
-          src={user.pfp || defaultpfp}
-          alt={user.username}
-          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full cursor-pointer"
-          onClick={handleUserClick}
-        />
-        <div className="flex-1">
-          <span
-            className="block w-24 text-gray-300 sm:w-32 truncate cursor-pointer"
-            onClick={handleUserClick}
-          >
-            {user.username}
-          </span>
-        </div>
+    {!(closeModal === undefined) && 
+    <>
+      <img
+      src={user.pfp || defaultpfp}
+      alt={user.username}
+      className="w-8 h-8 sm:w-10 sm:h-10 rounded-full cursor-pointer"
+      onClick={handleUserClick}
+    />
+    <div className="flex-1">
+      <span
+        className="block w-24 text-gray-300 sm:w-32 truncate cursor-pointer"
+        onClick={handleUserClick}
+      >
+        {user.username}
+      </span>
+    </div>
+    </>
+    }  
         <button
           onClick={handleFollowToggle}
           className={`px-3 py-1 text-sm rounded ${
