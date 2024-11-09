@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.checkbox {
+	opacity: 0;
+	position: absolute;
+}
+
+.label {
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 5px;
+	position: relative;
+	height: 22px;
+	width: 46px;
+	transform: scale(1.4);
+}
+
+.label .ball {
+	background-color: #fff;
+	border-radius: 50%;
+	position: absolute;
+	top: 1.5px;
+	left: 1px;
+	height: 19px;
+	width: 19px;
+	transform: translateX(2px);
+	transition: transform 0.2s linear;
+}
+
+.checkbox:checked + .label .ball {
+	transform: translateX(24px);
+}
+
+
+.fa-moon {
+	color: #f1c40f;
+}
+
+.fa-sun {
+	color: #f39c12;
+}
+
+@media (max-width: 768px) {
+  .label {
+      height: 22px; /* Adjust height for smaller screens */
+      width: 44px;  /* Adjust width for smaller screens */
+      padding: 4px; /* Adjust padding for smaller screens */
+      transform: scale(1.2);
+  }
+
+  .label .ball {
+      height: 18px; /* Adjust ball height */
+      width: 18px;  /* Adjust ball width */
+      top: 1.5px;     /* Keep the ball's top position */
+      left: 0px;    /* Keep the ball's left position */
+      transform: translateX(3px);
+  }
+}
+
+@media (max-width: 480px) {
+  .label {
+      height: 26px; 
+      width: 46px;  
+      padding: 3px; 
+      transform: scale(1);
+  }
+
+  .label .ball {
+      height: 19px; 
+      width: 19px;  
+      top: 3px;
+      left: 1px; 
+      transform: translateX(2px); 
+  }
+}

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import fetchUserProfile from "../../hooks/fetchUserProfile";
-import fetchUserData from "../../hooks/fetchUserData"; // Assume this hook exists
+import fetchUserData from "../../hooks/fetchUserData"; 
 import defaultpfp from "../../../Server/uploads/defaultpfp.png";
 import fetchPostData from "../../hooks/fetchPostData";
 import TestPost from "../Posts/TestPost";
@@ -14,6 +14,7 @@ import checkIfFollowing from "../../hooks/checkIfFollowing";
 import ProfileEditor from "./ProfileEditor";
 import deletePostById from "../../hooks/deletePostById";
 import ConfirmBox from "./ConfirmBox";
+import { DarkModeContext } from "../../App";
 
 function Profile() {
   const [userData, setUserData] = useState({
@@ -38,6 +39,7 @@ function Profile() {
   const [loading, setLoading] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState("");
+  const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
   const openModal = () => setCreateModal(true);
   const closeModal = () => setCreateModal(false);
   let count = 0;
@@ -147,24 +149,31 @@ function Profile() {
       fetchPosts();
     }
   }, [userData]);
+  useEffect(() => {
+    const darkThemePreference = localStorage.getItem("theme") === "dark"
+
+    setIsDarkMode(darkThemePreference);
+    document.documentElement.classList.toggle("dark", darkThemePreference);
+  }, []);
+
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
       <div className="navbar">
         <Navbar openModal={openModal} username={userData && userData.isProfileOwner ? userData.username:'#'}/>
       </div>
       {createModal && <CreatePost closeModal={closeModal} />}
 
       {errorP ? (
-        <div className="flex flex-col h-full p-6 mt-10 bg-black justify-center items-center">
-          <p className="mt-20 text-center bg-black text-xl sm:text-5xl">
+        <div className="flex flex-col h-full p-6 mt-10 bg-white dark:bg-black justify-center items-center">
+          <p className="mt-20 text-center bg-white dark:bg-black text-xl sm:text-5xl">
             {errorP}
           </p>
         </div>
       ) : (
         <div className="max-w-4xl mx-auto p-6 mt-10">
           <div className="flex items-center space-x-8 mb-8">
-            <div className="w-24 h-24 md:w-36 md:h-36 sm:w-24 rounded-full overflow-hidden border-4 border-gray-700 flex-shrink-0">
+            <div className="w-24 h-24 md:w-36 md:h-36 sm:w-24 rounded-full overflow-hidden border-4 border-black dark:border-gray-700 flex-shrink-0">
               <img
                 src={userData ? userData.pfp : defaultpfp}
                 alt={`${userData.username}'s profile picture`}
@@ -181,7 +190,7 @@ function Profile() {
                   </div>
               }
               <h2 className="text-3xl font-bold">{userData.username}</h2>
-              <p className="text-gray-400 mt-2">{userData.bio}</p>
+              <p className="text-black dark:text-gray-400 mt-2">{userData.bio}</p>
               
               {userData.isProfileOwner && (
                 <button
@@ -335,11 +344,11 @@ function Profile() {
 
 function Modal({ title, onClose, children }) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 mr-5 ml-5">
-      <div className="bg-darkgray text-black rounded-lg p-4 w-full max-w-lg">
+    <div className="border-black fixed inset-0 bg-white dark:bg-black bg-opacity-50 flex items-center justify-center z-50 mr-5 ml-5 ">
+      <div className="bg-white dark:bg-darkgray text-black rounded-lg p-4 w-full max-w-lg ">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl text-white font-semibold">{title}</h2>
-          <button onClick={onClose} className="text-white">
+          <h2 className="text-xl text-black dark:text-white font-semibold">{title}</h2>
+          <button onClick={onClose} className="text-black dark:text-white">
             Close
           </button>
         </div>
@@ -395,17 +404,17 @@ function UserListItem({ user, closeModal }) {
     {!(closeModal === undefined) && 
     <>
       <img
-      src={user.pfp || defaultpfp}
-      alt={user.username}
+      src={user?.pfp || defaultpfp}
+      alt={user?.username}
       className="w-8 h-8 sm:w-10 sm:h-10 rounded-full cursor-pointer"
       onClick={handleUserClick}
     />
     <div className="flex-1">
       <span
-        className="block w-24 text-gray-300 sm:w-32 truncate cursor-pointer"
+        className="block w-24 text-black dark:text-gray-300 sm:w-32 truncate cursor-pointer"
         onClick={handleUserClick}
       >
-        {user.username}
+        {user?.username}
       </span>
     </div>
     </>

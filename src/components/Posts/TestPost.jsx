@@ -208,7 +208,7 @@ export default function TestPost({ post, updatePostData }) {
   return (
     <>
       <div className="flex justify-center items-center mt-2 mb-2 ">
-        <div className="text-gray-300  bg-darkgray w-full sm:w-11/12 md:w-9/12 lg:w-2/3 max-w-2xl h-auto rounded-md border border-gray-400" onClick={handlePostClick}>
+        <div className="text-black dark:text-gray-300 bg-white dark:bg-darkgray w-full sm:w-11/12 md:w-9/12 lg:w-2/3 max-w-2xl h-auto rounded-md border border-gray-400" onClick={handlePostClick}>
           {!isOpen ? (
             <div className="flex justify-center items-center p-2 gap-2.5">
               {userData ? ( 
@@ -237,10 +237,10 @@ export default function TestPost({ post, updatePostData }) {
                 />
               </div>
 
-              <div className="overflow-auto max-h-[550px] h-[550px] flex-grow border-t border-b border-gray-500 px-4 py-2 w-full box-border mb-2 sm:px-5 sm:py-2.5 md:max-h-[600px] lg:max-h-[650px] scrollbar-hide">
+              <div className="overflow-auto max-h-[550px] h-[550px] flex-grow border-t border-b border-black dark:border-gray-500 px-4 py-2 w-full box-border mb-2 sm:px-5 sm:py-2.5 md:max-h-[600px] lg:max-h-[650px] scrollbar-hide">
                 {post.comments.length === 0 && (
                   <div className="flex justify-center items-center h-full">
-                    <span className="text-white">No Comments</span>
+                    <span className="text-black dark:text-white">No Comments</span>
                   </div>
                 )}
 
@@ -269,7 +269,7 @@ export default function TestPost({ post, updatePostData }) {
 
                     <span>
                       {commentData[index] ? (
-                        <p className="text-gray-300" onClick={handleClick}>
+                        <p className="text-black dark:text-gray-300" onClick={handleClick}>
                           {commentData[index].user}
                         </p>
                       ) : (
@@ -305,7 +305,7 @@ export default function TestPost({ post, updatePostData }) {
           {!isOpen && (
             <>
               <div className="w-full relative">
-                <div className="w-full h-full flex items-center justify-center overflow-hidden bg-black">
+                <div className="w-full h-full flex items-center justify-center overflow-hidden bg-white dark:bg-black">
                   <img
                     src={post.image}
                     alt=""
@@ -334,14 +334,14 @@ export default function TestPost({ post, updatePostData }) {
                     alt=""
                   />
                 </div>
-                <span className="text-gray-400 flex mt-2">
+                <span className="text-black dark:text-gray-400 flex mt-2">
                   {post.likes.length} likes
                 </span>
                 <p className="mt-2">{post.caption}</p>
-                <span className="text-gray-400 flex mt-2">
+                <span className="text-black dark:text-gray-400 flex mt-2">
                   {post.comments.length} comments
                 </span>
-                <span className="text-gray-400 flex mt-2">
+                <span className="text-black dark:text-gray-400 flex mt-2">
                   Uploded {getTimeAgoString(post.createdAt)}
                 </span>
               </div>

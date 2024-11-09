@@ -26,7 +26,7 @@ import getSuggestedUser from "../../hooks/getSuggestedUser";
 import followUser from "../../hooks/followUser";
 import unfollowUser from "../../hooks/unfollowUser";
 import ConfirmBox from "../Profile/ConfirmBox";
-import { userContext } from "../../App";
+import { DarkModeContext, userContext } from "../../App";
 
 const Feed = () => {
   const [heartIconn, setHeartIcon] = useState(redheartIcon);
@@ -38,6 +38,7 @@ const Feed = () => {
   const [isConfrimOpen, setIsConfirmOpen] = useState(!sessionStorage.getItem('warning'));
   const openModal = () => setCreateModal(true);
   const closeModal = () => setCreateModal(false);
+  const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
   const API_URL = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate();
@@ -117,6 +118,10 @@ const Feed = () => {
   };
 
   useEffect(() => {
+    const darkThemePreference = localStorage.getItem("theme") === "dark"
+
+    setIsDarkMode(darkThemePreference);
+    document.documentElement.classList.toggle("dark", darkThemePreference);
     const fetchSuggestedUsers = async (count) => {
       try {
         const users = await getSuggestedUser(count);
@@ -130,13 +135,13 @@ const Feed = () => {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen w-full bg-black">
+    <div className="flex flex-col h-screen w-full bg-white dark:bg-black">
       <div className="navbar">
         <Navbar openModal={openModal} username={userData ? userData.username:'#'}/>
       </div>
       {createModal && <CreatePost closeModal={closeModal} addNewCreatedPost={addNewCreatedPost}/>}
 
-      <div className="flex flex-grow bg-black mt-10">
+      <div className="flex flex-grow bg-white dark:bg-black mt-10">
         <div className="w-full lg:w-2/3 p-4 overflow-y-auto h-full">
           <div className="grid grid-cols-1">
             {posts.map((post, index) => (
@@ -148,7 +153,7 @@ const Feed = () => {
         </div>
 
         {/* User about section */}
-        <div className=" user-about-section text-gray-300">
+        <div className=" user-about-section text-black dark:text-gray-300">
           <div className="user-info">
             {userData ? (
               <img src={userData.pfp} className="user-dp" alt="" />
@@ -174,7 +179,7 @@ const Feed = () => {
           <h1 className="suggestion-heading">suggestions</h1>
           <div className="suggestion-container">
             {suggestedUsers && (suggestedUsers.map((sUser, index) => (
-              <div className="user-card bg-darkgray" key={'usercard' + index}>
+              <div className="user-card bg-white dark:bg-darkgray" key={'usercard' + index}>
               <img src={sUser.pfp} className="user-dp cursor-pointer" onClick={() => handleClick(sUser.username)} alt="" />
               <p className="username cursor-pointer" onClick={() => handleClick(sUser.username)}>{sUser.username}</p>
               <button className="follow-btn" 

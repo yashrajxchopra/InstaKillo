@@ -52,14 +52,14 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-black w-3/4 max-w-[500px] h-[350px] p-5 rounded-lg shadow-md relative">
-          <h2 className="text-xl text-gray-300 font-semibold mb-4">
+      <div className="fixed inset-0 bg-white dark:bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white dark:bg-black w-3/4 max-w-[500px] h-[350px] p-5 rounded-lg shadow-md relative">
+          <h2 className="text-xl text-black dark:text-gray-300 font-semibold mb-4">
             Create a Post
           </h2>
           <button
             onClick={closeModal} 
-            className="absolute top-2 right-2 text-white bg-red-500 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 mt-3"
+            className="absolute top-2 right-2 text-white dark:text-gray-300 bg-red-500 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 mt-3"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +81,7 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
             <div className="mb-4">
               <label
                 htmlFor="content"
-                className="block text-sm font-medium text-gray-300"
+                className="block text-sm font-medium text-black dark:text-gray-300"
               >
                 Caption
               </label>
@@ -92,13 +92,13 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
                 required
                 maxLength={150}
                 placeholder="150 word limit"
-                className="mt-2 text-white bg-gray-900 block w-full border border-gray-300 rounded-md p-2 h-20 resize-none"
+                className="mt-2 text-black dark:text-gray-300 bg-white dark:bg-gray-900 block w-full border border-gray-300 rounded-md p-2 h-20 resize-none"
               />
             </div>
             <div className="mb-4">
               <label
                 htmlFor="image"
-                className="block text-sm font-medium text-gray-300"
+                className="block text-sm font-medium text-black dark:text-gray-300"
               >
                 Select Image (.jpg, .jpeg, .png)
               </label>
@@ -108,7 +108,7 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
                 onChange={handleImageChange}
                 required
                 accept=".jpg,.jpeg,.png"
-                className="mt-2 text-white block w-full border border-gray-300 rounded-md p-2"
+                className="mt-2 text-black dark:text-gray-300 block w-full border border-gray-400 dark:border-gray-300 rounded-md p-2"
               />
             </div>
             {errorMessage && (
@@ -118,7 +118,7 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
               type="button"
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full bg-indigo-600 text-white font-semibold rounded-md px-3 py-1.5 hover:bg-indigo-500"
+              className="w-full bg-indigo-600 text-white dark:text-gray-300 font-semibold rounded-md px-3 py-1.5 hover:bg-indigo-500"
             >
               {loading ? "Posting..." : "Post"}
             </button>

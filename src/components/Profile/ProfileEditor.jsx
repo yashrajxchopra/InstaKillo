@@ -67,9 +67,9 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setProfileData
   };
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-black w-3/4 max-w-[500px] h-auto p-5 rounded-lg shadow-md relative">
-          <h2 className="text-xl text-gray-300 font-semibold mb-4">
+      <div className="fixed inset-0 bg-white dark:bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white dark:bg-black w-3/4 max-w-[500px] h-auto p-5 rounded-lg shadow-md relative">
+          <h2 className="text-xl text-white dark:text-gray-300 font-semibold mb-4">
             Edit Profile
           </h2>
           <div className="w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden border-2 border-gray-700 mx-auto mb-1">
@@ -103,7 +103,7 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setProfileData
             <div className="mb-4">
               <label
                 htmlFor="username"
-                className="block text-sm font-medium text-gray-300"
+                className="block text-sm font-medium text-black dark:text-gray-300"
               >
                 Username
               </label>
@@ -114,13 +114,13 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setProfileData
                 maxLength={20}
                 required
                 placeholder="Username"
-                className="mt-2 text-white bg-gray-900 block w-full border border-gray-300 rounded-md p-2"
+                className="mt-2 text-black dark:text-white bg-white dark:bg-gray-900 block w-full border border-black dark:border-gray-300 rounded-md p-2"
               />
             </div>
             <div className="mb-4">
               <label
                 htmlFor="bio"
-                className="block text-sm font-medium text-gray-300"
+                className="block text-sm font-medium text-black dark:text-gray-300"
               >
                 Bio
               </label>
@@ -130,13 +130,13 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setProfileData
                 onChange={(e) => setBio(e.target.value)}
                 maxLength={100}
                 placeholder="Username"
-                className="mt-2 text-white bg-gray-900 block w-full border border-gray-300 rounded-md p-2"
+                className="mt-2 text-black dark:text-white bg-white dark:bg-gray-900 block w-full border border-black dark:border-gray-300 rounded-md p-2"
               />
             </div>
             <div className="mb-4">
               <label
                 htmlFor="image"
-                className="block text-sm font-medium text-gray-300"
+                className="block text-sm font-medium text-black dark:text-gray-300"
               >
                 Select Profile Picture (.jpg, .jpeg, .png)
               </label>
@@ -145,7 +145,7 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setProfileData
                 id="image"
                 onChange={handleImageChange}
                 accept=".jpg,.jpeg,.png"
-                className="mt-2 text-white block w-full border border-gray-300 rounded-md p-2"
+                className="mt-2 text-black dark:text-white block w-full border border-black dark:border-gray-300 rounded-md p-2"
               />
             </div>
             <button

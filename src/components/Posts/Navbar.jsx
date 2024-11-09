@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import user from "./img/icon/user.png";
 import { userContext } from "../../App";
+import DarkModeToggle from "../DarkModeToggle/DarkModeToggle";
 
 export default function Navbar({ openModal, username }) {
   const [activityVisible, setActivityVisible] = useState(false);
@@ -65,12 +66,12 @@ export default function Navbar({ openModal, username }) {
   }, []);
 
   return (
-    <Disclosure as="nav" className="bg-black">
+    <Disclosure as="nav" className="bg-white dark:bg-black">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             {/* Mobile menu button*/}
-            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-800 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black  dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
               <span className="absolute -inset-0.5" />
               <span className="sr-only">Open main menu</span>
               <Bars3Icon
@@ -98,7 +99,7 @@ export default function Navbar({ openModal, username }) {
                   type="text"
                   placeholder="Search... [CTRL+K]"
                   ref={inputRef}
-                  className="block text-gray-300 bg-gray-900 w-64 h-8 p-3  border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="block text-black dark:text-gray-300 bg-white dark:bg-gray-900 w-64 h-8 p-3  border border-gray-400 dark:border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button className="flex items-center bg-gray-300 rounded-full p-2 ml-3">
                   <img className="h-4" src={searchIcon} alt="Search" />
@@ -110,7 +111,7 @@ export default function Navbar({ openModal, username }) {
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 lg:gap-5">
             <button
               type="button"
-              className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+              className="relative rounded-full bg-white dark:bg-gray-800 p-1 text-black dark:text-gray-400 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-blue dark:focus:ring-offset-gray-800"
             >
               <span className="absolute -inset-1.5" />
               <span className="sr-only">View notifications</span>
@@ -119,7 +120,7 @@ export default function Navbar({ openModal, username }) {
             <button
               type="button"
               onClick={openModal}
-              className="relative rounded-full ml-2 bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+              className="relative rounded-full bg-white dark:bg-gray-800 p-1 text-black dark:text-gray-400 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-blue dark:focus:ring-offset-gray-800 ml-2"
             >
               <span className="absolute -inset-1.5" />
               <span className="sr-only">Create post</span>
@@ -146,16 +147,21 @@ export default function Navbar({ openModal, username }) {
               >
                 <MenuItem>
                   <a
-                    href={`${userData?.username}`}
-                    className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
+                    onClick={()=> navigate(`/${userData?.username}`)}
+                    className="block px-4 py-2 text-sm text-black dark:text-gray-700 data-[focus]:bg-gray-100"
                   >
                     My Profile
                   </a>
                 </MenuItem>
+                <MenuItem >
+                 <div className="flex items-center px-6 py-2">
+                  <DarkModeToggle/>
+                </div>
+                </MenuItem>
                 <MenuItem>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none"
+                    className="flex items-center w-full px-4 py-2 text-sm text-black dark:text-gray-700 hover:bg-gray-100 focus:outline-none"
                   >
                     <img src={logout} className="h-4 w-4 mr-2" alt="Log out" />
                     Log out
@@ -173,7 +179,7 @@ export default function Navbar({ openModal, username }) {
             type="text"
             placeholder="Search..."
             ref={inputRef}
-            className="block text-gray-300 bg-gray-900 m-4 h-8 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="block text-black dark:text-gray-300 bg-white dark:bg-gray-900 m-4 h-8 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <button className="flex items-center bg-gray-300 rounded-full p-2">
             <img className="h-5" src={searchIcon} alt="Search" />

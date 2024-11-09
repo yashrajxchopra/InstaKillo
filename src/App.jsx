@@ -11,13 +11,16 @@ import TestPost from "./components/Posts/TestPost"
 import Profile from "./components/Profile/Profile"
 
 export const userContext = createContext();
+export const DarkModeContext = createContext();
 
 function App() {
   const [userData, setUserData] = useState();
+  const [isDarkMode, setIsDarkMode] = useState(false);
   
   return (
     <>
    <userContext.Provider value={[userData, setUserData]}>
+   <DarkModeContext.Provider value={[isDarkMode, setIsDarkMode]}>
     <Router>
       <Routes>
         <Route path="/signup" element={<SignUp />} />
@@ -28,6 +31,7 @@ function App() {
       </Routes>
     </Router>
     <ToastContainer position="bottom-center"/>
+    </DarkModeContext.Provider>
     </userContext.Provider>
     </>
     
