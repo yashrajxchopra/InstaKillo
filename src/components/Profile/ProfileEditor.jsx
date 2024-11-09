@@ -1,9 +1,11 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import ConfirmBox from "./ConfirmBox";
+import { userContext } from "../../App";
+import { useNavigate } from "react-router-dom";
 
-export default function ProfileEditor({ setIsEditorOpen, profile, setUserData }) {
+export default function ProfileEditor({ setIsEditorOpen, profile, setProfileData }) {
   const [username, setUsername] = useState(profile.username);
   const [bio, setBio] = useState(profile.bio);
   const [image, setImage] = useState(null);
@@ -11,6 +13,8 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setUserData })
   const API_URL = import.meta.env.VITE_API_URL;
   const [loading, setLoading] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [userData, setUserData] = useContext(userContext);
+  const navigate = useNavigate();
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
   };
@@ -36,13 +40,15 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setUserData })
       setLoading(false);
       setIsConfirmOpen(false);
       setIsEditorOpen(false);
-      console.log(response.data)
       if(response.data.message == "No changes to update."){
         setErrorMessage("");
         return;
       }
-      setUserData(response.data);
+      setProfileData(response.data);
+      const tempUserData = {username : response.data.username, bio: response.data.bio, pfp: response.data.pfp  };
+      setUserData(tempUserData);
       toast.success("Profile Editted");
+      navigate(`/${response.data.username}`);
     } catch (error) {
       setLoading(false);
       setIsConfirmOpen(false);

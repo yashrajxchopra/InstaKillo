@@ -195,7 +195,7 @@ function Profile() {
                 <ProfileEditor
                   setIsEditorOpen={setIsEditorOpen}
                   profile={userData}
-                  setUserData={setUserData}
+                  setProfileData={setUserData}
                 />
               )}
               <div className="flex mt-4 space-x-4">
