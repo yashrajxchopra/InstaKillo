@@ -177,17 +177,6 @@ export default function SignUp() {
         </p>
       </div>
     </div>
-    // <div className="container">
-    // <div className='input-div'>
-    // <h3>InstaKillo</h3>
-    //     <input type="email" className='inputText'value={email} required placeholder='Email'onChange={(event) => setEmail(event.target.value)}/>
-    //     <input type="text" className='inputText' value={username} required placeholder='Username' onChange={(event) => setUsername(event.target.value)}/>
-    //     <input type="text" className='inputText' value={fullName} required placeholder='Fullname' onChange={(event) => setFullname(event.target.value)}/>
-    //     <input type={showPassword ? "text" : "password"} className='inputText' value={password} required placeholder='Password'onChange={(event) => setPassword(event.target.value)}/>
-    //     <input type="checkbox"  onClick={togglePasswordVisibility} />
-    //     <span>Already have an account?<a href="/login"> Login</a></span>
-    //     <button className='submit-btn'onClick={handleSubmit}>Sign Up</button>
-    // </div>
-    // </div>
+  
   );
 }

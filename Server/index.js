@@ -88,19 +88,7 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", UserSchema);
 
-// Multer storage configuration
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, "uploads/");
-//   },
-//   filename: function (req, file, cb) {
-//     const uniqueSuffix = Date.now() + "-" + generateRandomString();
-//     const originalExtension = path.extname(file.originalname);
-//     const uniqueFileName =
-//       file.fieldname + "-" + uniqueSuffix + originalExtension;
-//     cb(null, uniqueFileName);
-//   },
-// });
+
 const upload = multer({ storage: multer.memoryStorage() });
 
 const PostSchema = new mongoose.Schema({

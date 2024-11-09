@@ -14,12 +14,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { userContext } from "../../App";
 
-// const style = {
-//   height: "auto",
-//   width: "500px",
-//   marginTop: "70px",
-//   marginLeft: "180px",
-// };
+
 const userStyle = {
   fontFamily: "'Arial'",
   fontSize: "13px",
@@ -29,7 +24,6 @@ const userStyle = {
 };
 
 export default function TestPost({ post, updatePostData }) {
-  //const userId = '663f56124af70d8faa6f85ac';
   const [likeIcon, setLikeIcon] = useState(heartIcon);
   const [isOpen, setIsOpen] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -184,11 +178,10 @@ export default function TestPost({ post, updatePostData }) {
         );
         const userData = await fetchUserData(user_Id.data._id);
         const newComment = {
-          user: userData.username, // Assuming userData contains username
-          pfp: userData.pfp, // Assuming userData contains pfp
+          user: userData.username, 
+          pfp: userData.pfp, 
         };
 
-        // Update the commentData state to include the new comment
         setCommentData((prevCommentData) => [...prevCommentData, newComment]);
       } catch (error) {
         console.log(error);
@@ -316,7 +309,7 @@ export default function TestPost({ post, updatePostData }) {
                   <img
                     src={post.image}
                     alt=""
-                    className="object-cover h-80 w-auto" // Adjust height as needed
+                    className="object-cover h-80 w-auto" 
                   />
                 </div>
               </div>
