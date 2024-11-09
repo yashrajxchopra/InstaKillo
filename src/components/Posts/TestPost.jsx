@@ -1,4 +1,4 @@
-import React, { useEffect, useInsertionEffect } from "react";
+import React, { useContext, useEffect, useInsertionEffect } from "react";
 import { useState } from "react";
 import heartIcon from "./img/icon/heart-nofill.png";
 import commentIcon from "./img/icon/comment.png";
@@ -12,7 +12,7 @@ import axios from "axios";
 import getTimeAgoString from "../../hooks/getTimeAgoString";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { TbArrowAutofitRight } from "react-icons/tb";
+import { userContext } from "../../App";
 
 // const style = {
 //   height: "auto",
@@ -37,6 +37,7 @@ export default function TestPost({ post, updatePostData }) {
   const [commentData, setCommentData] = useState([]);
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
+  const [viewerData] = useContext(userContext);
   
   const handlePostClick = (event) => {
     event.stopPropagation(); 
@@ -48,7 +49,6 @@ export default function TestPost({ post, updatePostData }) {
   const fetchUserData = async (createdBy) => {
     try {
       const response = await axios.get(`${API_URL}/api/user/${createdBy}`);
-      //console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -294,7 +294,7 @@ export default function TestPost({ post, updatePostData }) {
               </div>
               <div className="flex items-center">
                 <img
-                  src={userImage}
+                  src={viewerData?.pfp}
                   className="w-10 h-10 m-2 rounded-full ml-2"
                   alt=""
                 />
