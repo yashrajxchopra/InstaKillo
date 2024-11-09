@@ -629,6 +629,9 @@ app.post(
       const userId = req.user.userId;
       const newBio = req.body.bio;
       const newUsername = req.body.username;
+      if(newUsername.length > 20 || newBio.length > 100){
+        return res.status(403).json({ error: "Username or Bio length exceeded limit." });
+      }
       const user = await User.findById(userId);
       if (!user) {
         return res.status(404).json({ error: "User not found." });

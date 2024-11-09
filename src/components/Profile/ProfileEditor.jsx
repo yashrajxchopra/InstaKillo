@@ -46,7 +46,7 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setUserData })
     } catch (error) {
       setLoading(false);
       setIsConfirmOpen(false);
-      if (error.response.status === 400) {
+      if (error.response.status === 400 || error.response.status === 403 ) {
         setErrorMessage(error.response.data.error);
       } else {
         setErrorMessage("Error occured. Please try again.");
@@ -122,7 +122,7 @@ export default function ProfileEditor({ setIsEditorOpen, profile, setUserData })
                 id="bio"
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                maxLength={20}
+                maxLength={100}
                 placeholder="Username"
                 className="mt-2 text-white bg-gray-900 block w-full border border-gray-300 rounded-md p-2"
               />
