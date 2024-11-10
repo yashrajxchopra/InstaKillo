@@ -190,7 +190,7 @@ function Profile() {
               <p className="text-black dark:text-gray-400 mt-2">{userData.bio}</p>
               
               
-              {userData.isProfileOwner && (
+              {userData?.isProfileOwner && (
                 <div>
                   <button
                   onClick={() => setIsEditorOpen(true)}
@@ -222,7 +222,7 @@ function Profile() {
                   Following: {userData.following.length}
                 </button>
                 {!userData.isProfileOwner && 
-                  <UserListItem
+                    <UserListItem
               key='profile'
               user={userData}
             />
