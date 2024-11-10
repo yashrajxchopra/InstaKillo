@@ -27,6 +27,7 @@ import followUser from "../../hooks/followUser";
 import unfollowUser from "../../hooks/unfollowUser";
 import ConfirmBox from "../Profile/ConfirmBox";
 import { DarkModeContext, userContext } from "../../App";
+import SuggestionMobile from "./SuggestionMobile";
 
 const Feed = () => {
   const [heartIconn, setHeartIcon] = useState(redheartIcon);
@@ -35,7 +36,9 @@ const Feed = () => {
   const [userData, setUserData] = useContext(userContext);
   const [createModal, setCreateModal] = useState(false);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
-  const [isConfrimOpen, setIsConfirmOpen] = useState(!sessionStorage.getItem('warning'));
+  const [isConfrimOpen, setIsConfirmOpen] = useState(
+    !sessionStorage.getItem("warning")
+  );
   const openModal = () => setCreateModal(true);
   const closeModal = () => setCreateModal(false);
   const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
@@ -46,6 +49,29 @@ const Feed = () => {
   const toggleActivity = () => {
     setActivityVisible(!activityVisible);
     setHeartIcon(heartIconn === heartIcon ? heartIconF : heartIcon);
+  };
+  const handleFollowClick = async (fusername) => {
+    try {
+      await followUser(fusername);
+      setSuggestedUsers((prevUsers) =>
+        prevUsers.filter(
+          (user) => user.username !== fusername
+        )
+      );
+      fetchSuggestedUsers(3);
+      toast.success(`Following ${fusername}`);
+    } catch (error) {
+      toast.error("Failed");
+      console.error("Error following user:", error);
+    }
+  }
+  const fetchSuggestedUsers = async (count) => {
+    try {
+      const users = await getSuggestedUser(count);
+      setSuggestedUsers(users);
+    } catch (err) {
+      toast.error("Failes to find suggested users");
+    }
   };
   const fetchPost = async () => {
     try {
@@ -93,7 +119,7 @@ const Feed = () => {
 
   const handleClick = (username) => {
     navigate(`/${username}`);
-  }
+  };
 
   const handleLogout = () => {
     if (logoutUser()) {
@@ -112,24 +138,15 @@ const Feed = () => {
     );
   };
 
-
   const addNewCreatedPost = (newPost) => {
     setPosts([newPost, ...posts]);
   };
 
   useEffect(() => {
-    const darkThemePreference = localStorage.getItem("theme") === "dark"
+    const darkThemePreference = localStorage.getItem("theme") === "dark";
 
     setIsDarkMode(darkThemePreference);
     document.documentElement.classList.toggle("dark", darkThemePreference);
-    const fetchSuggestedUsers = async (count) => {
-      try {
-        const users = await getSuggestedUser(count);
-        setSuggestedUsers(users);
-      } catch (err) {
-        toast.error("Failes to find suggested users");
-      }
-    };
     fetchSuggestedUsers(3);
     fetchPost();
   }, []);
@@ -137,15 +154,29 @@ const Feed = () => {
   return (
     <div className="flex flex-col h-screen w-full bg-white dark:bg-black">
       <div className="navbar">
-        <Navbar openModal={openModal} username={userData ? userData.username:'#'}/>
+        <Navbar
+          openModal={openModal}
+          username={userData ? userData.username : "#"}
+        />
       </div>
-      {createModal && <CreatePost closeModal={closeModal} addNewCreatedPost={addNewCreatedPost}/>}
-
-      <div className="flex flex-grow bg-white dark:bg-black mt-10">
+      {createModal && (
+        <CreatePost
+          closeModal={closeModal}
+          addNewCreatedPost={addNewCreatedPost}
+        />
+      )}
+          <div className="block sm:hidden mt-10 w-full">
+            <SuggestionMobile users={suggestedUsers} handleFollowClick={handleFollowClick} />
+          </div>
+      <div className="flex flex-grow bg-white dark:bg-black sm:mt-0 md:mt-10">
         <div className="w-full lg:w-2/3 p-4 overflow-y-auto h-full">
           <div className="grid grid-cols-1">
             {posts.map((post, index) => (
-              <div key={index} className="w-full" onFocus={index === 7 ? () => console.log("Yup") : undefined}>
+              <div
+                key={index}
+                className="w-full"
+                onFocus={index === 7 ? () => console.log("Yup") : undefined}
+              >
                 <TestPost post={post} updatePostData={updatePostData} />
               </div>
             ))}
@@ -178,37 +209,49 @@ const Feed = () => {
           </div>
           <h1 className="suggestion-heading">suggestions</h1>
           <div className="suggestion-container">
-            {suggestedUsers && (suggestedUsers.map((sUser, index) => (
-              <div className="user-card bg-white dark:bg-darkgray" key={'usercard' + index}>
-              <img src={sUser.pfp} className="user-dp cursor-pointer" onClick={() => handleClick(sUser.username)} alt="" />
-              <p className="username cursor-pointer" onClick={() => handleClick(sUser.username)}>{sUser.username}</p>
-              <button className="follow-btn" 
-              onClick={ async ()=> {
-                try {
-                  await followUser(sUser.username); 
-                  setSuggestedUsers(prevUsers => 
-                    prevUsers.filter(user => user.username !== sUser.username)
-                  );
-                  toast.success(`Following ${sUser.username}`);
-                } catch (error) {
-                  toast.error("Failed");
-                  console.error("Error following user:", error); 
-                }
-              }}
-              >follow</button>
-            </div>
-            )))}
+            {suggestedUsers?.length === 0 && <p className="text-black dark:text-white">You have lots of friends.</p>}
+            {suggestedUsers &&
+              suggestedUsers.map((sUser, index) => (
+                <div
+                  className="user-card bg-white dark:bg-darkgray"
+                  key={"usercard" + index}
+                >
+                  <img
+                    src={sUser.pfp}
+                    className="user-dp cursor-pointer"
+                    onClick={() => handleClick(sUser.username)}
+                    alt=""
+                  />
+                  <p
+                    className="username cursor-pointer"
+                    onClick={() => handleClick(sUser.username)}
+                  >
+                    {sUser.username}
+                  </p>
+                  <button
+                    className="follow-btn"
+                    onClick={() => handleFollowClick(sUser.username)}
+                  >
+                    follow
+                  </button>
+                </div>
+              ))}
           </div>
         </div>
       </div>
       {isConfrimOpen ? (
-        <ConfirmBox 
-          handleSubmit={() => {sessionStorage.setItem('warning', 1); setIsConfirmOpen(false);}}
+        <ConfirmBox
+          handleSubmit={() => {
+            sessionStorage.setItem("warning", 1);
+            setIsConfirmOpen(false);
+          }}
           setIsConfirmOpen={setIsConfirmOpen}
           loading={false}
-          textToDisplay={"This is site is in development and can have security flaws. Donot upload sensitive data. UnderStood?"}
+          textToDisplay={
+            "This is site is in development and can have security flaws. Donot upload sensitive data. UnderStood?"
+          }
         />
-      ): null}
+      ) : null}
     </div>
   );
 };

@@ -191,12 +191,14 @@ function Profile() {
               
               
               {userData.isProfileOwner && (
-                <button
+                <div>
+                  <button
                   onClick={() => setIsEditorOpen(true)}
                   className="text-blue-500"
                 >
                   Edit Profile
                 </button>
+                </div>
               )}
               {isEditorOpen && (
                 <ProfileEditor
