@@ -144,7 +144,10 @@ const Feed = () => {
 
   useEffect(() => {
     const darkThemePreference = localStorage.getItem("theme") === "dark";
-
+    if(!localStorage.getItem("token")){
+      navigate('/login')
+      return;
+    }
     setIsDarkMode(darkThemePreference);
     document.documentElement.classList.toggle("dark", darkThemePreference);
     fetchSuggestedUsers(3);
