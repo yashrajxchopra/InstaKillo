@@ -112,6 +112,10 @@ function Profile() {
   };
 
   const fetchPosts = async () => {
+    if(userData?.posts.length === 0){
+      setUserPosts([]);
+      return;
+    }
     if (Array.isArray(userData.posts) && userData.posts.length > 0) {
       try {
         const postsData = await Promise.all(
@@ -145,10 +149,10 @@ function Profile() {
     fetchProfile();
   }, [username]);
   useEffect(() => {
-    if (userData.username) {
+    if (userData?.username) {
       fetchPosts();
     }
-  }, [userData]);
+  }, [username, userData]);
   useEffect(() => {
     const darkThemePreference = localStorage.getItem("theme") === "dark"
 
@@ -172,25 +176,19 @@ function Profile() {
         </div>
       ) : (
         <div className="max-w-4xl mx-auto p-6 mt-10">
-          <div className="flex items-center space-x-8 mb-8">
-            <div className="w-24 h-24 md:w-36 md:h-36 sm:w-24 rounded-full overflow-hidden border-4 border-black dark:border-gray-700 flex-shrink-0">
+          <div className="flex flex-row items-center space-x-8 mb-8">
+            <div className="w-24 h-24 md:w-36 md:h-36 sm:w-24 rounded-full overflow-hidden border-4 border-fray-500 dark:border-gray-700 flex-shrink-0">
               <img
                 src={userData ? userData.pfp : defaultpfp}
                 alt={`${userData.username}'s profile picture`}
                 className="object-cover w-full h-full"
               />
             </div>
-            <div>
-            {!userData.isProfileOwner && 
-                <div className="absolute ml-32">
-                  <UserListItem
-              key='profile'
-              user={userData}
-            />
-                  </div>
-              }
-              <h2 className="text-3xl font-bold">{userData.username}</h2>
+              <div className="flex flex-col">
+                {!userData?.isProfileOwner && <div className="w-full"></div>}
+              <h2 className="text-3xl font-bold h-min">{userData.username}</h2>
               <p className="text-black dark:text-gray-400 mt-2">{userData.bio}</p>
+              
               
               {userData.isProfileOwner && (
                 <button
@@ -221,6 +219,12 @@ function Profile() {
                 >
                   Following: {userData.following.length}
                 </button>
+                {!userData.isProfileOwner && 
+                  <UserListItem
+              key='profile'
+              user={userData}
+            />
+              }
               </div>
             </div>
           </div>

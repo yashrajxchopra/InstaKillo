@@ -9,7 +9,6 @@ export default async function checkIfFollowing(username) {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response.data.message)
     if(response.data.message == "True") return true;
     else return false;
   } catch (error) {

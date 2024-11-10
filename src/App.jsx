@@ -15,7 +15,7 @@ export const DarkModeContext = createContext();
 
 function App() {
   const [userData, setUserData] = useState();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
   
   return (
     <>

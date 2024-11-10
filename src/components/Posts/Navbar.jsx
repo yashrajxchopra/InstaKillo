@@ -22,26 +22,36 @@ import { useNavigate } from "react-router-dom";
 import user from "./img/icon/user.png";
 import { userContext } from "../../App";
 import DarkModeToggle from "../DarkModeToggle/DarkModeToggle";
+import search from "../../hooks/search";
+import SearchBoxResult from "./SearchBoxResult";
 
 export default function Navbar({ openModal, username }) {
   const [activityVisible, setActivityVisible] = useState(false);
+  const [query, setQuery] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
   const [userData, setUserData] = useContext(userContext);
   const inputRef = useRef(null);
-  const navigation = [
-    { name: "Feed", href: "#", current: true },
-    { name: "Team", href: "#", current: false },
-    { name: "Projects", href: "#", current: false },
-    { name: "Calendar", href: "#", current: false },
-  ];
+  const dropdownRef = useRef(null);
 
-  function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
-  }
-
-  const toggleActivity = () => {
-    setActivityVisible(!activityVisible);
-    setHeartIcon(heartIconn === heartIcon ? heartIconF : heartIcon);
+  const fetchSearchResults = async (searchQuery) => {
+    try {
+      const response = await search(searchQuery);
+      setSearchResults(response);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+    if (value) {
+      setIsOpen(true);
+      fetchSearchResults(value);
+    } else {
+      setIsOpen(false);
+    }
   };
   const handleLogout = () => {
     if (logoutUser()) {
@@ -53,17 +63,40 @@ export default function Navbar({ openModal, username }) {
   };
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
-        event.preventDefault(); 
-        inputRef.current?.focus(); 
+      if ((event.ctrlKey || event.metaKey) && event.key === "k") {
+        event.preventDefault();
+        inputRef.current?.focus();
       }
     };
-    document.addEventListener('keydown', handleKeyDown);
-    
+    document.addEventListener("keydown", handleKeyDown);
+
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        dropdownRef.current &&
+        dropdownRef.current.contains(event.target) &&
+        (event.target.innerText || event.target.alt)
+      ) {
+        if(event.target.alt)
+        {
+          navigate(`/${event.target.alt}`)
+        }
+        else{
+          navigate(`/${event.target.innerText}`);
+        }
+      }
+      if (inputRef.current && !inputRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [inputRef, dropdownRef]);
 
   return (
     <Disclosure as="nav" className="bg-white dark:bg-black">
@@ -99,11 +132,30 @@ export default function Navbar({ openModal, username }) {
                   type="text"
                   placeholder="Search... [CTRL+K]"
                   ref={inputRef}
+                  value={query}
+                  onChange={handleInputChange}
                   className="block text-black dark:text-gray-300 bg-white dark:bg-gray-900 w-64 h-8 p-3  border border-gray-400 dark:border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button className="flex items-center bg-gray-300 rounded-full p-2 ml-3">
                   <img className="h-4" src={searchIcon} alt="Search" />
                 </button>
+                {isOpen && searchResults?.length > 0 && (
+                  <div
+                    ref={dropdownRef}
+                    className="absolute z-10 w-64 mr-10 mt-9 overflow-hidden bg-white border border-gray-200 dark:border-gray-800  rounded-lg shadow-lg"
+                  >
+                    {searchResults.map((user) => (
+                      <SearchBoxResult
+                        key={user._id}
+                        user={user}
+                        onClick={() => {
+                          setQuery(user.username);
+                          setIsOpen(false);
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -147,16 +199,16 @@ export default function Navbar({ openModal, username }) {
               >
                 <MenuItem>
                   <a
-                    onClick={()=> navigate(`/${userData?.username}`)}
+                    onClick={() => navigate(`/${userData?.username}`)}
                     className="block px-4 py-2 text-sm text-black dark:text-gray-700 data-[focus]:bg-gray-100"
                   >
                     My Profile
                   </a>
                 </MenuItem>
-                <MenuItem >
-                 <div className="flex items-center px-6 py-2">
-                  <DarkModeToggle/>
-                </div>
+                <MenuItem>
+                  <div className="flex items-center px-6 py-2">
+                    <DarkModeToggle />
+                  </div>
                 </MenuItem>
                 <MenuItem>
                   <button
@@ -173,17 +225,41 @@ export default function Navbar({ openModal, username }) {
         </div>
       </div>
 
-      <DisclosurePanel className="sm:hidden items-center justify-between">
-        <div className="flex justify-center items-center">
-          <input
-            type="text"
-            placeholder="Search..."
-            ref={inputRef}
-            className="block text-black dark:text-gray-300 bg-white dark:bg-gray-900 m-4 h-8 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <button className="flex items-center bg-gray-300 rounded-full p-2">
-            <img className="h-5" src={searchIcon} alt="Search" />
-          </button>
+      <DisclosurePanel className="sm:hidden items-center justify-between relative">
+        <div className="flex flex-col justify-center items-center">
+          <div className="flex flex-row">
+            <input
+              type="text"
+              placeholder="Search..."
+              ref={inputRef}
+              value={query}
+              onChange={handleInputChange}
+              className="block text-black dark:text-gray-300 bg-white dark:bg-gray-900 m-4 h-8 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <button className="flex h-10 w-10 mt-3 items-center bg-gray-300 rounded-full p-2">
+              <img className="h-5" src={searchIcon} alt="Search" />
+            </button>
+          </div>
+          <div className="w-full h-1 mt-1"></div>
+          {isOpen && searchResults?.length > 0 && (
+            <div
+              ref={dropdownRef}
+              className="z-10 w-56 mr-7 mb-2 overflow-hidden bg-white border border-gray-200 dark:border-gray-800  rounded-lg shadow-lg"
+            >
+              {searchResults.map((user) => (
+                <SearchBoxResult
+                  key={user._id}
+                  user={user}
+                  onClick={() => {
+                    console.log(`Navigating to: /${user.username}`);
+                    navigate(`/${user.username}`);
+                    setQuery(user.username);
+                    setIsOpen(false);
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </DisclosurePanel>
     </Disclosure>

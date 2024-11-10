@@ -684,6 +684,48 @@ app.post(
   }
 );
 
+//get search result
+app.get('/api/search', authenticateToken, async (req, res) => {
+  try {
+    const query = req.query.q;
+
+    if (!query) {
+      return res.status(400).json({ error: 'Query is required' });
+    }
+
+    const users = await User.aggregate([
+      {
+        $match: {
+          username: { $regex: query, $options: 'i' }
+        }
+      },
+      {
+        $addFields: {
+          matchScore: {
+            $cond: { 
+              if: { $eq: [ { $substr: ["$username", 0, query.length] }, query ] }, 
+              then: 1, 
+              else: 0 
+            }
+          }
+        }
+      },
+      {
+        $sort: { matchScore: -1, username: 1 } // Sort by matchScore and then alphabetically
+      },
+      {
+        $limit: 5
+      },
+      {
+        $project: { username: 1, pfp: 1 } // Return only username and pfp
+      }
+    ]);
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 //test
 app.get("/api/test", (req, res) => {
   res.send(`
