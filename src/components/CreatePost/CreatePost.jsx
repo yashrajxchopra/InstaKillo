@@ -113,7 +113,7 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
                 className="mt-2 text-black dark:text-gray-300 block w-full border border-gray-400 dark:border-gray-300 rounded-md p-2"
               />
               <div className="mt-2">
-              <span>Image Compression  </span>
+              <span className="text-black dark:text-white">Image Compression  </span>
               <input type="checkbox" name="Image Compression" className="h-auto w-auto" checked={compression} onChange={(e) => SetCompression(e.target.checked)}/>
               </div>
             </div>
