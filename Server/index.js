@@ -6,6 +6,7 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const admin = require("firebase-admin");
+const sharp = require('sharp');
 const {
   generateToken,
   authenticateToken,
@@ -202,6 +203,18 @@ app.post(
 
       const fileName = `${Date.now()}-${generateRandomString()}.${fileExtension}`;
 
+      let imageBuffer = req.file.buffer;
+      if (req.body.compression === "true") {
+        try {
+          imageBuffer = await sharp(req.file.buffer)
+            .jpeg({ quality: 70 }) 
+            .toBuffer();
+        } catch (compressionError) {
+          console.error("Error compressing image:", compressionError);
+          return res.status(500).send("Error compressing image");
+        }
+      }
+
       const uploadImage = () => {
         return new Promise((resolve, reject) => {
           const fileUpload = bucket.file(`images/${fileName}`);
@@ -222,7 +235,7 @@ app.post(
             resolve(publicUrl);
           });
 
-          stream.end(req.file.buffer);
+          stream.end(imageBuffer);
         });
       };
 

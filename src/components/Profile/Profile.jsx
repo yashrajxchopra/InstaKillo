@@ -166,7 +166,7 @@ function Profile() {
       <div className="navbar">
         <Navbar openModal={openModal} username={userData && userData.isProfileOwner ? userData.username:'#'}/>
       </div>
-      {createModal && <CreatePost closeModal={closeModal} />}
+      {createModal && <CreatePost closeModal={closeModal} addNewCreatedPost={(post) => setUserPosts(prev => [...prev, post])}/>}
 
       {errorP ? (
         <div className="flex flex-col h-full p-6 mt-10 bg-white dark:bg-black justify-center items-center">

@@ -7,6 +7,7 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [compression, SetCompression] = useState(true);
   const API_URL = import.meta.env.VITE_API_URL;
   const [loading, setLoading] = useState(false);
 
@@ -21,6 +22,7 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
       const formData = new FormData();
       formData.append("caption", caption);
       formData.append("image", image);
+      formData.append("compression", compression);
       const token = localStorage.getItem("token");
 
       const response = await axios.post(`${API_URL}/api/posts`, formData, {
@@ -53,7 +55,7 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
   return (
     <>
       <div className="fixed inset-0 bg-white dark:bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-white dark:bg-black w-3/4 max-w-[500px] h-[350px] p-5 rounded-lg shadow-md relative">
+        <div className="bg-white dark:bg-black w-3/4 max-w-[500px] h-auto p-5 rounded-lg shadow-md relative">
           <h2 className="text-xl text-black dark:text-gray-300 font-semibold mb-4">
             Create a Post
           </h2>
@@ -110,6 +112,10 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
                 accept=".jpg,.jpeg,.png"
                 className="mt-2 text-black dark:text-gray-300 block w-full border border-gray-400 dark:border-gray-300 rounded-md p-2"
               />
+              <div className="mt-2">
+              <span>Image Compression  </span>
+              <input type="checkbox" name="Image Compression" className="h-auto w-auto" checked={compression} onChange={(e) => SetCompression(e.target.checked)}/>
+              </div>
             </div>
             {errorMessage && (
               <div className="text-red-500 mb-2">{errorMessage}</div>
