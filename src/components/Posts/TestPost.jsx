@@ -229,12 +229,28 @@ export default function TestPost({ post, updatePostData }) {
             <div className="flex flex-col scrollbar-hide h-[34.3rem]">
               <div className="flex items-center justify-between w-full h-8">
                 <h2 className="flex-grow text-center">Comments</h2>
-                <img
+                {/* <img
                   src={close}
                   className="w-5 h-5 cursor-pointer mt-2 mr-2"
                   onClick={toggleComment}
                   alt="close"
-                />
+                /> */}
+                  <svg
+                  onClick={toggleComment}
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ cursor: "pointer" }}
+                  className="text-black dark:text-white"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
               </div>
 
               <div className="overflow-auto max-h-[550px] h-[550px] flex-grow border-t border-b border-black dark:border-gray-500 px-4 py-2 w-full box-border mb-2 sm:px-5 sm:py-2.5 md:max-h-[600px] lg:max-h-[650px] scrollbar-hide">
@@ -252,7 +268,7 @@ export default function TestPost({ post, updatePostData }) {
                     {commentData[index] ? (
                       <img
                         src={commentData[index].pfp}
-                        onClick={handleClick}
+                        onClick={() => navigate(`/${commentData[index].user}`)}
                         className="w-10 h-10 rounded-full mr-2.5"
                         alt=""
                         style={{ cursor: "pointer" }}
@@ -260,7 +276,6 @@ export default function TestPost({ post, updatePostData }) {
                     ) : (
                       <img
                         src="../../../Server/uploads\\defaultpfp.png"
-                        onClick={handleClick}
                         className="w-10 h-10 rounded-full mr-2.5"
                         alt=""
                         style={{ cursor: "pointer" }}
@@ -269,11 +284,11 @@ export default function TestPost({ post, updatePostData }) {
 
                     <span>
                       {commentData[index] ? (
-                        <p className="text-black dark:text-gray-300" onClick={handleClick}>
+                        <p className="text-black dark:text-gray-300 cursor-pointer" onClick={() => navigate(`/${commentData[index].user}`)}>
                           {commentData[index].user}
                         </p>
                       ) : (
-                        <p style={userStyle} onClick={handleClick}>
+                        <p style={userStyle}>
                           Loading
                         </p>
                       )}

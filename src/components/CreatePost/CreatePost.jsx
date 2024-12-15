@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { createModalContext, postsContext, userPostsContext } from "../../App";
 
-export default function CreatePost({ closeModal, addNewCreatedPost }) {
+export default function CreatePost() {
   const [userId, setUserId] = useState("");
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
@@ -10,11 +11,18 @@ export default function CreatePost({ closeModal, addNewCreatedPost }) {
   const [compression, SetCompression] = useState(true);
   const API_URL = import.meta.env.VITE_API_URL;
   const [loading, setLoading] = useState(false);
+  const [createModal, setCreateModal] = useContext(createModalContext);
+  const [posts, setPosts] = useContext(postsContext);
+  const [userPosts, setUserPosts] = useContext(userPostsContext);
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
   };
-
+  const addNewCreatedPost = (post) =>{
+    setPosts(prev => [post, ...prev]);
+    setUserPosts(prev => [...prev, post]);
+  }
+  const closeModal = () => setCreateModal(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

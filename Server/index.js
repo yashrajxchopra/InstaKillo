@@ -7,6 +7,7 @@ const multer = require("multer");
 const path = require("path");
 const admin = require("firebase-admin");
 const sharp = require('sharp');
+
 const {
   generateToken,
   authenticateToken,
@@ -16,6 +17,8 @@ const {
 const { error, log } = require("console");
 require("dotenv").config();
 const fs = require("fs");
+
+const PORT = 5000;
 
 const generateRandomString = () => {
   return Math.random().toString(36).substring(2, 15);
@@ -37,6 +40,7 @@ admin.initializeApp({
 });
 const bucket = admin.storage().bucket();
 const app = express();
+
 
 async function deleteFileFromUrl(imageUrl) {
   const filePath =
@@ -106,6 +110,18 @@ const PostSchema = new mongoose.Schema({
   ],
   likes: [String],
 });
+
+const NotificationSchema = new mongoose.Schema({
+  type: { type: String, enum: ["comment", "follow", "like"], required: true },
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Who triggered the notification
+  receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Who will receive the notification
+  post: { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: false }, // For comment notifications
+  message: { type: String, required: true },
+  isRead: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const Notification = mongoose.model("Notification", NotificationSchema);
 
 const Post = mongoose.model("Posts", PostSchema);
 //register user
@@ -326,26 +342,32 @@ app.post("/api/posts/:postId/like", authenticateToken, async (req, res) => {
 });
 
 // add a comment to a post
-app.post("/api/posts/:postId/comment", async (req, res) => {
+app.post("/api/posts/:postId/comment", authenticateToken, async (req, res) => {
   try {
     const postId = req.params.postId;
     const { comment } = req.body;
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
-    if (!token || !comment)
-      return res.status(401).json({ message: "No token provided" });
-    if (!verifyToken(token)) {
-      return res.status(401).json({ error: "Invalid Token" });
-    }
+    
     const post = await Post.findById(postId);
-    const userInfo = tokenDecoder(token);
-    const createdBy = userInfo.userId;
+    const createdBy = req.user.userId;
 
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
 
     post.comments.push({ comment, createdBy, createdAt: Date.now() });
+
+    // Create a notification for the post owner
+    if (createdBy !== post.createdBy) {
+      const user = await User.findOne({ createdBy }, "username");
+      const notification = new Notification({
+        type: "comment",
+        sender: createdBy,
+        receiver: post.createdBy,
+        post: post._id,
+        message: `${user.username} commented on your post.`,
+      });
+      await notification.save();
+    }
 
     await post.save();
 
@@ -454,7 +476,7 @@ app.post("/api/follow/:username", authenticateToken, async (req, res) => {
   const { username } = req.params;
   const userId = req.user.userId;
   try {
-    const currentUser = await User.findById(userId).select("following");
+    const currentUser = await User.findById(userId).select("following username");
 
     if (!currentUser) {
       return res.status(404).json({ message: "User not found" });
@@ -482,6 +504,20 @@ app.post("/api/follow/:username", authenticateToken, async (req, res) => {
 
     await currentUser.save();
     await userToFollow.save();
+    
+    // Create a notification for the user being followed
+    try{
+    const notification = new Notification({
+      type: "follow",
+      sender: userId,
+      receiver: userToFollow._id,
+      message: `${currentUser.username} started following you.`,
+    });
+    await notification.save();
+
+    
+  }
+    catch(error){console.log(error)}
 
     return res
       .status(200)
@@ -739,6 +775,32 @@ app.get('/api/search', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// Fetch notifications for a user
+app.get("/api/getNotification", authenticateToken, async (req, res) => {
+  try {
+    const notifications = await Notification.find({ receiver: req.user.id })
+      .sort({ createdAt: -1 })
+      .populate("sender", "username profilePicture")
+      .populate("post", "title");
+
+    res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// Mark notifications as read
+app.put("/api/read/:id", authenticateToken, async (req, res) => {
+  try {
+    await Notification.findByIdAndUpdate(req.params.id, { isRead: true });
+    res.json({ message: "Notification marked as read" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+
 //test
 app.get("/api/test", (req, res) => {
   res.send(`
@@ -758,7 +820,9 @@ app.get("/api/test", (req, res) => {
 });
 
 // Start the server
-const PORT = 5000;
+
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
+
+

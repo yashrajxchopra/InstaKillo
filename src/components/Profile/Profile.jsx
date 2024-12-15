@@ -14,7 +14,7 @@ import checkIfFollowing from "../../hooks/checkIfFollowing";
 import ProfileEditor from "./ProfileEditor";
 import deletePostById from "../../hooks/deletePostById";
 import ConfirmBox from "./ConfirmBox";
-import { DarkModeContext } from "../../App";
+import { DarkModeContext, userPostsContext } from "../../App";
 
 function Profile() {
   const [userData, setUserData] = useState({
@@ -27,9 +27,9 @@ function Profile() {
     isProfileOwner: false,
   });
   const { username } = useParams();
-  const [userPosts, setUserPosts] = useState([]);
+  const [userPosts, setUserPosts] = useContext(userPostsContext);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [createModal, setCreateModal] = useState(false);
+  
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showFollowingModal, setShowFollowingModal] = useState(false);
   const [followersDetails, setFollowersDetails] = useState([]);
@@ -40,8 +40,7 @@ function Profile() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [deleteId, setDeleteId] = useState("");
   const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
-  const openModal = () => setCreateModal(true);
-  const closeModal = () => setCreateModal(false);
+  
   let count = 0;
   let clickedPost;
   const handleImageClick = (post) => {
@@ -153,20 +152,11 @@ function Profile() {
       fetchPosts();
     }
   }, [username, userData]);
-  useEffect(() => {
-    const darkThemePreference = localStorage.getItem("theme") === "dark"
 
-    setIsDarkMode(darkThemePreference);
-    document.documentElement.classList.toggle("dark", darkThemePreference);
-  }, []);
 
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white">
-      <div className="navbar">
-        <Navbar openModal={openModal} username={userData && userData.isProfileOwner ? userData.username:'#'}/>
-      </div>
-      {createModal && <CreatePost closeModal={closeModal} addNewCreatedPost={(post) => setUserPosts(prev => [...prev, post])}/>}
 
       {errorP ? (
         <div className="flex flex-col h-full p-6 mt-10 bg-white dark:bg-black justify-center items-center">
@@ -312,20 +302,20 @@ function Profile() {
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
             >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+                  style={{ cursor: "pointer" }}
+                  className= "text-white"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
             </button>
             <div className="w-full">
               <TestPost

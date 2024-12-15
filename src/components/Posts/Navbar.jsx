@@ -20,12 +20,12 @@ import logoutUser from "../../hooks/logout";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import user from "./img/icon/user.png";
-import { userContext } from "../../App";
+import { createModalContext, userContext } from "../../App";
 import DarkModeToggle from "../DarkModeToggle/DarkModeToggle";
 import search from "../../hooks/search";
 import SearchBoxResult from "./SearchBoxResult";
 
-export default function Navbar({ openModal, username }) {
+export default function Navbar({ username }) {
   const [activityVisible, setActivityVisible] = useState(false);
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -34,6 +34,7 @@ export default function Navbar({ openModal, username }) {
   const [userData, setUserData] = useContext(userContext);
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
+  const [createModal, setCreateModal] = useContext(createModalContext);
 
   const fetchSearchResults = async (searchQuery) => {
     try {
@@ -171,7 +172,7 @@ export default function Navbar({ openModal, username }) {
             </button>
             <button
               type="button"
-              onClick={openModal}
+              onClick={() => setCreateModal(true)}
               className="relative rounded-full bg-white dark:bg-gray-800 p-1 text-black dark:text-gray-400 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-blue dark:focus:ring-offset-gray-800 ml-2"
             >
               <span className="absolute -inset-1.5" />
@@ -200,7 +201,7 @@ export default function Navbar({ openModal, username }) {
                 <MenuItem>
                   <a
                     onClick={() => navigate(`/${userData?.username}`)}
-                    className="block px-4 py-2 text-sm text-black dark:text-gray-700 data-[focus]:bg-gray-100"
+                    className="block px-4 py-2 text-sm text-black dark:text-gray-700 data-[focus]:bg-gray-100 cursor-pointer"
                   >
                     My Profile
                   </a>

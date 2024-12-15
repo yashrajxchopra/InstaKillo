@@ -26,21 +26,18 @@ import getSuggestedUser from "../../hooks/getSuggestedUser";
 import followUser from "../../hooks/followUser";
 import unfollowUser from "../../hooks/unfollowUser";
 import ConfirmBox from "../Profile/ConfirmBox";
-import { DarkModeContext, userContext } from "../../App";
+import { DarkModeContext, postsContext, userContext } from "../../App";
 import SuggestionMobile from "./SuggestionMobile";
 
 const Feed = () => {
   const [heartIconn, setHeartIcon] = useState(redheartIcon);
   const [activityVisible, setActivityVisible] = useState(false);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useContext(postsContext);
   const [userData, setUserData] = useContext(userContext);
-  const [createModal, setCreateModal] = useState(false);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const [isConfrimOpen, setIsConfirmOpen] = useState(
     !sessionStorage.getItem("warning")
   );
-  const openModal = () => setCreateModal(true);
-  const closeModal = () => setCreateModal(false);
   const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -138,36 +135,14 @@ const Feed = () => {
     );
   };
 
-  const addNewCreatedPost = (newPost) => {
-    setPosts([newPost, ...posts]);
-  };
-
   useEffect(() => {
-    const darkThemePreference = localStorage.getItem("theme") === "dark";
-    if(!localStorage.getItem("token")){
-      navigate('/login')
-      return;
-    }
-    setIsDarkMode(darkThemePreference);
-    document.documentElement.classList.toggle("dark", darkThemePreference);
     fetchSuggestedUsers(3);
     fetchPost();
   }, []);
 
+
   return (
     <div className="flex flex-col h-screen w-full bg-white dark:bg-black">
-      <div className="navbar">
-        <Navbar
-          openModal={openModal}
-          username={userData ? userData.username : "#"}
-        />
-      </div>
-      {createModal && (
-        <CreatePost
-          closeModal={closeModal}
-          addNewCreatedPost={addNewCreatedPost}
-        />
-      )}
           <div className="block sm:hidden mt-10 w-full">
             <SuggestionMobile users={suggestedUsers} handleFollowClick={handleFollowClick} />
           </div>
