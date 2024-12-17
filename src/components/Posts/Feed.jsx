@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./styles.css";
 import searchIcon from "./img/icon/search.png";
 import homeIcon from "./img/icon/home.png";
@@ -35,6 +35,9 @@ const Feed = () => {
   const [posts, setPosts] = useContext(postsContext);
   const [userData, setUserData] = useContext(userContext);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const loader = useRef(null);
   const [isConfrimOpen, setIsConfirmOpen] = useState(
     !sessionStorage.getItem("warning")
   );
@@ -70,61 +73,58 @@ const Feed = () => {
       toast.error("Failes to find suggested users");
     }
   };
-  const fetchPost = async () => {
+
+  const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_URL}/api/posts`, {
+      const userId = await axios.post(
+        `${API_URL}/api/getUserId`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const tempUserData = await fetchUserData(userId.data._id);
+      setUserData(tempUserData);
+    } catch (error) {
+      toast.error("Error getting user Profile");
+      setUserData({
+        username: "Not Found",
+        bio: "Not found",
+        pfp: "../../../Server/uploads\\defaultpfp.png",
+      });
+    }
+  };
+  const fetchPost = async  ()=>{
+    try {
+      const token = localStorage.getItem("token");
+      const { data } = await axios.get(`${API_URL}/api/posts?page=${page}&limit=10`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      try {
-        const userId = await axios.post(
-          `${API_URL}/api/getUserId`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const tempUserData = await fetchUserData(userId.data._id);
-        setUserData(tempUserData);
-      } catch (error) {
-        toast.error("Error getting user Profile");
-        setUserData({
-          username: "Not Found",
-          bio: "Not found",
-          pfp: "../../../Server/uploads\\defaultpfp.png",
-        });
-      }
-      setPosts(response.data);
-    } catch (error) {
-      if (
-        error.response &&
-        (error.response.status === 401 || error.response.status === 403)
-      ) {
-        toast.error("Session expired or invalid token, please login again!");
-        localStorage.removeItem("token");
-        navigate("/login");
-      } else {
-        toast.error("Error occurred while processing request!");
-        console.error("Error details:", error);
-      }
+      console.log(data)
+      setPosts((prev) => (page === 1 ? data.posts : [...prev, ...data.posts]));
+      setHasMore(page < data.totalPages);
+  } catch (error) {
+    if (
+      error.response &&
+      (error.response.status === 401 || error.response.status === 403)
+    ) {
+      toast.error("Session expired or invalid token, please login again!");
+      localStorage.removeItem("token");
+      navigate("/login");
+    } else {
+      toast.error("Error occurred while processing request!");
+      console.error("Error details:", error);
     }
+  }
   };
 
   const handleClick = (username) => {
     navigate(`/${username}`);
-  };
-
-  const handleLogout = () => {
-    if (logoutUser()) {
-      toast.success("Logout Successful");
-      navigate("/login");
-    } else {
-      toast.error("There was a problem");
-    }
   };
 
   const updatePostData = (postId, updatedPost) => {
@@ -134,11 +134,35 @@ const Feed = () => {
       )
     );
   };
-
   useEffect(() => {
-    fetchSuggestedUsers(3);
     fetchPost();
+}, [page, suggestedUsers]);
+  useEffect(() => {
+    fetchUserProfile();
+    fetchSuggestedUsers(3);
   }, []);
+  
+
+useEffect(() => {
+  const observer = new IntersectionObserver(
+      (entries) => {
+          if (entries[0].isIntersecting && hasMore) {
+              setPage((prev) => prev + 1);
+          }
+      },
+      { threshold: 1.0 }
+  );
+
+  if (loader.current) {
+      observer.observe(loader.current);
+  }
+
+  return () => {
+      if (loader.current) {
+          observer.unobserve(loader.current);
+      }
+  };
+}, [hasMore]);
 
 
   return (
@@ -149,15 +173,17 @@ const Feed = () => {
       <div className="flex flex-grow bg-white dark:bg-black sm:mt-0 md:mt-10">
         <div className="w-full lg:w-2/3 p-4 overflow-y-auto h-full">
           <div className="grid grid-cols-1">
-            {posts.map((post, index) => (
+            {posts.length === 0 && <div><p className="text-back dark:text-white">Follow other users to see posts.</p></div>}
+            {posts && posts.map((post, index) => (
               <div
                 key={index}
                 className="w-full"
-                onFocus={index === 7 ? () => console.log("Yup") : undefined}
               >
                 <TestPost post={post} updatePostData={updatePostData} />
               </div>
             ))}
+            {hasMore && <div ref={loader} className="h-5 bg-white dark:bg-black" />}
+            {!hasMore && <p className="text-black dark:text-white">No more posts to load</p>}
           </div>
         </div>
 

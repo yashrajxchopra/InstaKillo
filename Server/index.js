@@ -379,10 +379,29 @@ app.post("/api/posts/:postId/comment", authenticateToken, async (req, res) => {
 });
 //Get All Posts
 app.get("/api/posts", authenticateToken, async (req, res) => {
-  //console.log(req.user)
   try {
-    const posts = await Post.find().sort({ createdAt: -1 }).exec();
-    res.status(200).json(posts);
+    const user = await User.findById(req.user.userId); 
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const following = user.following;
+
+    if (following.length === 0) {
+      return res.status(200).json({ posts: [], message: "No users followed yet" });
+    }
+
+    const page = parseInt(req.query.page) || 1; 
+    const limit = parseInt(req.query.limit) || 10; 
+    const skip = (page - 1) * limit;
+    const posts = await Post.find({ createdBy: { $in: following } }).sort({ createdAt: -1 }).skip(skip).limit(limit).exec();
+    const totalPosts = await Post.countDocuments();
+    res.status(200).json({
+      posts,
+      totalPages: Math.ceil(totalPosts / limit),
+      currentPage: page,
+  });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

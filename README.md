@@ -23,11 +23,12 @@ InstaKillo is a modern web application designed to streamline your social media 
 
 ## Features
 
-- User authentication with JWT tokens
-- Upload and manage media files
+- Uncompressed/Lossless Image Uploads
+- Secure interactive design
 - Responsive design for mobile and desktop
 - Secure MongoDB connection with Docker
 - Customizable user profiles
+- User authentication with JWT tokens
 
 ## Technologies
 
