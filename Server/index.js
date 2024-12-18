@@ -152,7 +152,7 @@ app.post("/api/register", async (req, res) => {
     }
 
     bio = "";
-    const profileImagePath = "../../../Server/uploads\\defaultpfp.png";
+    const profileImagePath = "https://firebasestorage.googleapis.com/v0/b/instakillo-image-storage.appspot.com/o/images%2Fdefaultpfp.png?alt=media&token=5eb50e1f-7fe7-4f59-b526-f5d9cceee477";
 
     const hashedPassword = await bcrypt.hash(password, 10); // Salt rounds = 10
 

@@ -14,4 +14,4 @@ export default async function fetchNotifications() {
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch notifications');
   }
-};
+}

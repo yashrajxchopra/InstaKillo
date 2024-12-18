@@ -65,17 +65,25 @@ const Feed = () => {
     }
   }
   const fetchSuggestedUsers = async (count) => {
+    if(!token){
+      navigate('/login');
+      return;
+    }
     try {
       const users = await getSuggestedUser(count);
       setSuggestedUsers(users);
     } catch (err) {
-      toast.error("Failes to find suggested users");
+      toast.error("Failed to find suggested users");
     }
   };
 
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem("token");
+      if(!token){
+        navigate('/login');
+        return;
+      }
       const userId = await axios.post(
         `${API_URL}/api/getUserId`,
         {},
@@ -99,6 +107,10 @@ const Feed = () => {
   const fetchPost = async  ()=>{
     try {
       const token = localStorage.getItem("token");
+      if(!token){
+        navigate('/login');
+        return;
+      }
       const { data } = await axios.get(`${API_URL}/api/posts?page=${page}&limit=10`, {
         headers: {
           Authorization: `Bearer ${token}`,

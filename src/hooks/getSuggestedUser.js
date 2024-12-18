@@ -14,6 +14,6 @@ export default async function getSuggestedUser(count) {
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch suggested users');
   }
-};
+}
 
 
