@@ -65,6 +65,7 @@ const Feed = () => {
     }
   }
   const fetchSuggestedUsers = async (count) => {
+    const token = localStorage.getItem("token");
     if(!token){
       navigate('/login');
       return;
