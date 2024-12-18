@@ -24,17 +24,23 @@ import { createModalContext, userContext } from "../../App";
 import DarkModeToggle from "../DarkModeToggle/DarkModeToggle";
 import search from "../../hooks/search";
 import SearchBoxResult from "./SearchBoxResult";
+import Notifications from "../Notifications/Notifications";
+import fetchNotifications from "../../hooks/fetchNotifications";
 
 export default function Navbar({ username }) {
   const [activityVisible, setActivityVisible] = useState(false);
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const navigate = useNavigate();
   const [userData, setUserData] = useContext(userContext);
   const inputRef = useRef(null);
+  const triggerRef = useRef(null);
   const dropdownRef = useRef(null);
+  const notifpanelRef = useRef(null);
   const [createModal, setCreateModal] = useContext(createModalContext);
+  const [isNotificatonsOpen, setIsNotificatonsOpen] = useState(false);
 
   const fetchSearchResults = async (searchQuery) => {
     try {
@@ -44,6 +50,13 @@ export default function Navbar({ username }) {
       console.error("Error fetching users:", error);
     }
   };
+  const getUnreadNotificationsCount = async ()=>{
+    try{
+      const tempunreadCount = await fetchNotifications();
+      setUnreadCount(tempunreadCount);
+    }
+    catch(e){}
+  }
   const handleInputChange = (e) => {
     const value = e.target.value;
     setQuery(value);
@@ -69,9 +82,27 @@ export default function Navbar({ username }) {
         inputRef.current?.focus();
       }
     };
+    const handleClick = (event) => {
+      if (notifpanelRef.current?.contains(event.target)) {
+        return;
+      }
+
+      if (triggerRef.current?.contains(event.target)) {
+        return;
+      }
+
+      setIsNotificatonsOpen(false);
+    };
+    getUnreadNotificationsCount();
     document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("click", handleClick);
+    const interval = setInterval(() => {
+      getUnreadNotificationsCount();
+    }, 120000);
 
     return () => {
+      clearInterval(interval);
+      document.removeEventListener("click", handleClick);
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
@@ -135,7 +166,7 @@ export default function Navbar({ username }) {
                   ref={inputRef}
                   value={query}
                   onChange={handleInputChange}
-                  className="block text-black dark:text-gray-300 bg-white dark:bg-gray-900 w-64 h-8 p-3  border border-gray-400 dark:border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="block text-black rounded-full dark:text-gray-300 bg-white dark:bg-gray-900 focus:w-72 transition-all duration-2000 ease-in-out h-8 p-3  border border-gray-400 dark:border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <button className="flex items-center bg-gray-300 rounded-full p-2 ml-3">
                   <img className="h-4" src={searchIcon} alt="Search" />
@@ -164,12 +195,22 @@ export default function Navbar({ username }) {
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 lg:gap-5">
             <button
               type="button"
+              ref={triggerRef}
+              onClick={()=>{setUnreadCount(0);setIsNotificatonsOpen(prev => !prev);}}
               className="relative rounded-full bg-white dark:bg-gray-800 p-1 text-black dark:text-gray-400 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-blue dark:focus:ring-offset-gray-800"
             >
               <span className="absolute -inset-1.5" />
               <span className="sr-only">View notifications</span>
+              {unreadCount > 0 && (
+              <span className="absolute top-0 inline-flex items-center justify-center h-5 w-5 text-xs font-bold text-black  dark:text-white bg-red-500 rounded-full">
+                {unreadCount}
+              </span>
+            )}
               <BellIcon aria-hidden="true" className="h-6 w-6" />
             </button>
+            <div ref={notifpanelRef}>
+            {isNotificatonsOpen && <Notifications setIsNotificatonsOpen={setIsNotificatonsOpen}/>}
+            </div>
             <button
               type="button"
               onClick={() => setCreateModal(true)}
@@ -235,7 +276,7 @@ export default function Navbar({ username }) {
               ref={inputRef}
               value={query}
               onChange={handleInputChange}
-              className="block text-black dark:text-gray-300 bg-white dark:bg-gray-900 m-4 h-8 p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="block text-black dark:text-gray-300 bg-white dark:bg-gray-900 m-4 h-8 p-3 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <button className="flex h-10 w-10 mt-3 items-center bg-gray-300 rounded-full p-2">
               <img className="h-5" src={searchIcon} alt="Search" />

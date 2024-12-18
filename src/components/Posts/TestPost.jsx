@@ -127,6 +127,7 @@ export default function TestPost({ post, updatePostData }) {
     
     try {
       const token = localStorage.getItem("token");
+      setLikeIcon(prev => (prev === redheartIcon ? heartIcon : redheartIcon));
       const response = await axios.post(
         `${API_URL}/api/posts/${post._id}/like`,
         {},

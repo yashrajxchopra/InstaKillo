@@ -358,10 +358,10 @@ app.post("/api/posts/:postId/comment", authenticateToken, async (req, res) => {
 
     // Create a notification for the post owner
     if (createdBy !== post.createdBy) {
-      const user = await User.findOne({ createdBy }, "username");
+      const user = await User.findById(new mongoose.Types.ObjectId(createdBy), "username _id");
       const notification = new Notification({
         type: "comment",
-        sender: createdBy,
+        sender: user._id,
         receiver: post.createdBy,
         post: post._id,
         message: `${user.username} commented on your post.`,
@@ -395,7 +395,7 @@ app.get("/api/posts", authenticateToken, async (req, res) => {
     const page = parseInt(req.query.page) || 1; 
     const limit = parseInt(req.query.limit) || 10; 
     const skip = (page - 1) * limit;
-    const posts = await Post.find({ createdBy: { $in: following } }).sort({ createdAt: -1 }).skip(skip).limit(limit).exec();
+    const posts = await Post.find({ createdBy:  {$in: [...following, user._id ]} }).sort({ createdAt: -1 }).skip(skip).limit(limit).exec();
     const totalPosts = await Post.countDocuments();
     res.status(200).json({
       posts,
@@ -779,13 +779,13 @@ app.get('/api/search', authenticateToken, async (req, res) => {
         }
       },
       {
-        $sort: { matchScore: -1, username: 1 } // Sort by matchScore and then alphabetically
+        $sort: { matchScore: -1, username: 1 } 
       },
       {
         $limit: 5
       },
       {
-        $project: { username: 1, pfp: 1 } // Return only username and pfp
+        $project: { username: 1, pfp: 1 } 
       }
     ]);
     res.json(users);
@@ -795,31 +795,42 @@ app.get('/api/search', authenticateToken, async (req, res) => {
   }
 });
 
-// Fetch notifications for a user
-app.get("/api/getNotification", authenticateToken, async (req, res) => {
-  try {
-    const notifications = await Notification.find({ receiver: req.user.id })
-      .sort({ createdAt: -1 })
-      .populate("sender", "username profilePicture")
-      .populate("post", "title");
-
-    res.json(notifications);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
-  }
-});
 
 // Mark notifications as read
-app.put("/api/read/:id", authenticateToken, async (req, res) => {
+app.put("/api/notification/read/:id", authenticateToken, async (req, res) => {
   try {
-    await Notification.findByIdAndUpdate(req.params.id, { isRead: true });
-    res.json({ message: "Notification marked as read" });
+    const notification = await Notification.findByIdAndUpdate(req.params.id, { isRead: true });
+    res.status(200).json({ notification });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: "Server Error" });
   }
 });
 
+//Get Notifications
+app.get("/api/getNotifications", authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId); 
 
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const page = parseInt(req.query.page) || 1; 
+    const limit = parseInt(req.query.limit) || 5; 
+    const skip = (page - 1) * limit;
+    const notifications = await Notification.find({ receiver: { $in: user._id } }).sort({ createdAt: -1 }).skip(skip).limit(limit).exec();
+    const totalNotifications = await Notification.countDocuments();
+    res.status(200).json({
+      notifications,
+      totalPages: Math.ceil(totalNotifications / limit),
+      currentPage: page,
+  });
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: error.message });
+  }
+});
 //test
 app.get("/api/test", (req, res) => {
   res.send(`

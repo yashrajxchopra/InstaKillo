@@ -41,7 +41,6 @@ const Feed = () => {
   const [isConfrimOpen, setIsConfirmOpen] = useState(
     !sessionStorage.getItem("warning")
   );
-  const [isDarkMode, setIsDarkMode] = useContext(DarkModeContext);
   const API_URL = import.meta.env.VITE_API_URL;
 
   const navigate = useNavigate();
@@ -105,7 +104,6 @@ const Feed = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(data)
       setPosts((prev) => (page === 1 ? data.posts : [...prev, ...data.posts]));
       setHasMore(page < data.totalPages);
   } catch (error) {
@@ -178,6 +176,7 @@ useEffect(() => {
               <div
                 key={index}
                 className="w-full"
+                tabIndex={index}
               >
                 <TestPost post={post} updatePostData={updatePostData} />
               </div>

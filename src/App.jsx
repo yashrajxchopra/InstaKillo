@@ -10,6 +10,7 @@ import TestPost from "./components/Posts/TestPost";
 import Profile from "./components/Profile/Profile";
 import Navbar from "./components/Posts/Navbar"; // Adjust path if necessary
 import CreatePost from "./components/CreatePost/CreatePost";
+import SinglePost from "./components/Posts/SinglePost";
 
 export const userContext = createContext();
 export const DarkModeContext = createContext();
@@ -60,7 +61,7 @@ function App() {
                   <Routes>
                     <Route path="/signup" element={<SignUp />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/post" element={<TestPost />} />
+                    <Route path="/post/:postId" element={<SinglePost />} />
                     <Route path="/" element={<Feed />} />
                     <Route path="/:username" element={<Profile />} />
                   </Routes>
