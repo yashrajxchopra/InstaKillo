@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as a parent image
-FROM node:18-alpine
+FROM node:20-alpine as build
 
 # Install build dependencies for native modules
 RUN apk add --no-cache \
@@ -21,8 +21,11 @@ RUN npm install
 # Copy the rest of your application code
 COPY . .
 
-# Expose the frontend port
-EXPOSE 5173
+# Copy the build output to the NGINX web root
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Command to run your application using npm run dev
-CMD ["npm", "run", "dev"]
+# Expose port 80
+EXPOSE 80
+
+# Start NGINX
+CMD ["nginx", "-g", "daemon off;"]

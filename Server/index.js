@@ -113,9 +113,9 @@ const PostSchema = new mongoose.Schema({
 
 const NotificationSchema = new mongoose.Schema({
   type: { type: String, enum: ["comment", "follow", "like"], required: true },
-  sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Who triggered the notification
-  receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Who will receive the notification
-  post: { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: false }, // For comment notifications
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
+  receiver: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
+  post: { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: false }, 
   message: { type: String, required: true },
   isRead: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
@@ -330,8 +330,21 @@ app.post("/api/posts/:postId/like", authenticateToken, async (req, res) => {
     } else {
       // User hasn't liked the post, add the like
       post.likes.push(userId);
+      try{
+        if (userId !== post.createdBy) {
+          const user = await User.findById(new mongoose.Types.ObjectId(post.createdBy), "username _id");
+          const userWhoLikedPost = await User.findById(new mongoose.Types.ObjectId(userId), "username");
+          const notification = new Notification({
+            type: "like",
+            sender: userId,
+            receiver: user._id,
+            post: post._id,
+            message: `${userWhoLikedPost.username} liked on your post.`,
+          });
+          await notification.save();
+        }
+      }catch(error){}
     }
-
     await post.save();
 
     res.status(200).json({ message: "Like added successfully", post: post });

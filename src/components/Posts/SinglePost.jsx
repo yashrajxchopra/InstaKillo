@@ -25,9 +25,17 @@ export default function SinglePost() {
   return (
     <div className='w-full mt-16 flex items-center justify-center'>
         {post && (
-        <div className='wi-full'>
-        <TestPost post={post} updatePostData={()=>{}}/>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm z-50">
+        <div className="p-4 rounded-lg shadow-lg max-w-3xl w-full mx-4">
+
+          <div className="w-full">
+            <TestPost
+              post={post}
+              updatePostData={()=>{}}
+            />
+          </div>
         </div>
+      </div>
         )}
         {error && <div className='text-black dark:text-white'><h2>{error}</h2></div>}
     </div>

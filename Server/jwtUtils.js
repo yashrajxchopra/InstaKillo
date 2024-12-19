@@ -1,22 +1,24 @@
 const jwt = require('jsonwebtoken');
+require("dotenv").config();
 
+const TOKEN_KEY = process.env.TOKEN_KEY;
 // Generate JWT token
 function generateToken(user) {
     const payload = {
         userId: user._id,
         email: user.email,
     };
-    const token=  jwt.sign(payload, '007', { expiresIn: '6d' }); 
+    const token=  jwt.sign(payload, TOKEN_KEY, { expiresIn: '7d' }); 
     return token;
 }
 
 // Verify JWT token
 function verifyToken(token) {
-    return jwt.verify(token, '007'); 
+    return jwt.verify(token, TOKEN_KEY); 
 }
 
 function tokenDecoder(token){
-    return jwt.decode(token, '007'); 
+    return jwt.decode(token, TOKEN_KEY); 
 }
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -25,7 +27,7 @@ function authenticateToken(req, res, next) {
         return res.status(401).json({ error: 'Unauthorized: No token provided' });
     }
 
-    jwt.verify(token, '007', (err, user) => { 
+    jwt.verify(token, TOKEN_KEY, (err, user) => { 
         if (err) {
             return res.status(403).json({ error: 'Forbidden: Invalid token' });
         }

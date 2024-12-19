@@ -49,7 +49,7 @@ export default function Notifications({ setIsNotificatonsOpen }) {
         }
       );
       setNotifications((prev) =>
-        page === 1 ? data.notifications : [...prev, ...data?.notifications]
+        page === 1 ? data.notifications : [...prev, ...data.notifications]
       );
       setHasMore(page < data.totalPages);
     } catch (error) {
@@ -135,12 +135,12 @@ export default function Notifications({ setIsNotificatonsOpen }) {
   }, [notifications]);
 
   return (
-    <div className="absolute top-14 right-4 w-64 p-4 bg-slate-50 dark:bg-darkgray shadow-lg rounded-lg z-50">
+    <div className="absolute top-14 right-4 w-64 p-4 bg-slate-50 dark:bg-darkgray shadow-lg rounded-lg z-50 h-auto">
       <h3 className="text-black dark:text-white font-bold mb-2">
         Notifications
       </h3>
       <hr className="border-t border-gray-300 dark:border-gray-700 mb-2" />
-      <div className="flex flex-col gap-2 h-auto max-h-28">
+      <div className="flex flex-grow flex-col gap-2 max-h-36 overflow-y-scroll">
         {notifications?.length === 0 && (
           <span className="text-black dark:text-white text-center">
             No Notifications
@@ -164,9 +164,7 @@ export default function Notifications({ setIsNotificatonsOpen }) {
               {notification.message}
             </span>
           ))}
-        {hasMore && (
-          <div ref={loader} className="h-2 bg-slate-50 dark:bg-darkgray" />
-        )}
+        {hasMore && <div ref={loader} className="h-5 w-5 bg-red-900" />}
       </div>
     </div>
   );

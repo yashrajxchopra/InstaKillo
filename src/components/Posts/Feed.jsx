@@ -187,7 +187,7 @@ useEffect(() => {
             {posts.length === 0 && <div><p className="text-back dark:text-white">Follow other users to see posts.</p></div>}
             {posts && posts.map((post, index) => (
               <div
-                key={index}
+                key={post?._id}
                 className="w-full"
                 tabIndex={index}
               >
