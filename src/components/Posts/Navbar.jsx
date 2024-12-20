@@ -278,8 +278,8 @@ export default function Navbar({ username }) {
               onChange={handleInputChange}
               className="block text-black dark:text-gray-300 bg-white dark:bg-gray-900 m-4 h-8 p-3 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <button className="flex h-10 w-10 mt-3 items-center bg-gray-300 rounded-full p-2">
-              <img className="h-5" src={searchIcon} alt="Search" />
+            <button className="flex h-8 w-8 mt-4 items-center bg-gray-300 rounded-full pl-2">
+              <img className="h-4" src={searchIcon} alt="Search" />
             </button>
           </div>
           <div className="w-full h-1 mt-1"></div>

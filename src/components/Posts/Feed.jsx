@@ -28,6 +28,7 @@ import unfollowUser from "../../hooks/unfollowUser";
 import ConfirmBox from "../Profile/ConfirmBox";
 import { DarkModeContext, postsContext, userContext } from "../../App";
 import SuggestionMobile from "./SuggestionMobile";
+import Footer from "../Footer/Footer";
 
 const Feed = () => {
   const [heartIconn, setHeartIcon] = useState(redheartIcon);
@@ -268,10 +269,11 @@ useEffect(() => {
           setIsConfirmOpen={setIsConfirmOpen}
           loading={false}
           textToDisplay={
-            "This is site is in development and can have security flaws. Donot upload sensitive data. UnderStood?"
+            "This is site is in development and can have security flaws. Don't upload sensitive data. Understood?"
           }
         />
       ) : null}
+      <Footer/>
     </div>
   );
 };

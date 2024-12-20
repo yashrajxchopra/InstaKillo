@@ -11,6 +11,7 @@ import Profile from "./components/Profile/Profile";
 import Navbar from "./components/Posts/Navbar"; // Adjust path if necessary
 import CreatePost from "./components/CreatePost/CreatePost";
 import SinglePost from "./components/Posts/SinglePost";
+import Footer from "./components/Footer/Footer";
 
 export const userContext = createContext();
 export const DarkModeContext = createContext();
@@ -32,7 +33,8 @@ function Layout({ children, userData, createModal}) {
           {createModal && <CreatePost addNewCreatedPost={()=>{}}/>}
         </div>
       )}
-      {children} {/* Render route content */}
+      {children} 
+      {hideNavbar && <Footer/>}
     </>
   );
 }
