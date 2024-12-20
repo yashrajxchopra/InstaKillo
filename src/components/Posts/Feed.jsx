@@ -148,6 +148,10 @@ const Feed = () => {
   useEffect(() => {
     fetchPost();
 }, [page, suggestedUsers]);
+useEffect(() => {
+  setPage(1);
+  fetchPost();
+}, [suggestedUsers]);
   useEffect(() => {
     fetchUserProfile();
     fetchSuggestedUsers(3);
