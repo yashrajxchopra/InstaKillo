@@ -147,7 +147,7 @@ const Feed = () => {
   };
   useEffect(() => {
     fetchPost();
-}, [page, suggestedUsers]);
+}, [page]);
 useEffect(() => {
   setPage(1);
   fetchPost();
