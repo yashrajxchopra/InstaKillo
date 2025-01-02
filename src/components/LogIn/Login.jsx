@@ -4,11 +4,13 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from './logo.png';
+import ConfirmBox from '../Profile/ConfirmBox';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [isResetOpen, setIsResetOpen] = useState(false);
     const API_URL= import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
     const handleSubmit = async () => {
@@ -127,9 +129,10 @@ export default function Login() {
                 />
               </div>
               <div className="text-sm flex justify-end mt-2">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                  <a href="#" onClick={()=>setIsResetOpen(true)} className="font-semibold text-indigo-600 hover:text-indigo-500">
                     Forgot password?
                   </a>
+                  {isResetOpen && <ConfirmBox handleSubmit={()=>setIsResetOpen(false) } setIsConfirmOpen={setIsResetOpen} textToDisplay={"Contact me at yashrajxchopra@gmail.com to reset password."} loading={false}/>}
                 </div>
             </div>
 
